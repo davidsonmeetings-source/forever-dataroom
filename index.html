@@ -435,6 +435,154 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
     present:   { url: "https://foreverparkhayam.com", label: "מצגת הפרויקט", desc: "הדמיות, תכנון וסביבת החיים" }
   }
 };
+
+/* ═══ מנוע DOCX + עוזרי נספח א1 — חולצו אוטומטית ממחירון הסוכנים ═══
+   מקור: rishon-src/index.src.html. אין לערוך כאן — עורכים שם ובונים מחדש. */
+var DocxFill = (function(){
+  var CRC = (function(){ var t=new Uint32Array(256);
+    for(var n=0;n<256;n++){ var c=n; for(var k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; }
+    return t; })();
+  function crc32(b){ var c=0xFFFFFFFF; for(var i=0;i<b.length;i++) c=CRC[(c^b[i])&0xFF]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+
+  /* הליכה סדרתית על כותרות מקומיות — תקף כי התבנית נבנתה כ-stored בלי data descriptors */
+  function readZip(buf){
+    var dv=new DataView(buf.buffer,buf.byteOffset,buf.byteLength), e=[], off=0;
+    while(off+4<=buf.length && dv.getUint32(off,true)===0x04034b50){
+      var method=dv.getUint16(off+8,true), csize=dv.getUint32(off+18,true);
+      var nl=dv.getUint16(off+26,true), xl=dv.getUint16(off+28,true), ds=off+30+nl+xl;
+      if(method!==0) throw new Error("התבנית חייבת להיות ZIP לא דחוס (נמצאה שיטה "+method+")");
+      e.push({name:new TextDecoder("utf-8").decode(buf.subarray(off+30,off+30+nl)), data:buf.subarray(ds,ds+csize)});
+      off=ds+csize;
+    }
+    if(!e.length) throw new Error("התבנית ריקה או פגומה");
+    return e;
+  }
+  function writeZip(entries){
+    var enc=new TextEncoder(), parts=[], central=[], offset=0;
+    entries.forEach(function(e){
+      var nb=enc.encode(e.name), crc=crc32(e.data), size=e.data.length;
+      var lh=new Uint8Array(30+nb.length), lv=new DataView(lh.buffer);
+      lv.setUint32(0,0x04034b50,true); lv.setUint16(4,20,true); lv.setUint16(6,0x0800,true);
+      lv.setUint16(8,0,true); lv.setUint16(12,0x21,true);
+      lv.setUint32(14,crc,true); lv.setUint32(18,size,true); lv.setUint32(22,size,true);
+      lv.setUint16(26,nb.length,true); lh.set(nb,30);
+      var cd=new Uint8Array(46+nb.length), cv=new DataView(cd.buffer);
+      cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true);
+      cv.setUint16(8,0x0800,true); cv.setUint16(10,0,true); cv.setUint16(14,0x21,true);
+      cv.setUint32(16,crc,true); cv.setUint32(20,size,true); cv.setUint32(24,size,true);
+      cv.setUint16(28,nb.length,true); cv.setUint32(42,offset,true); cd.set(nb,46);
+      parts.push(lh,e.data); central.push(cd); offset+=lh.length+size;
+    });
+    var cdSize=central.reduce(function(a,c){return a+c.length;},0);
+    var eo=new Uint8Array(22), ev=new DataView(eo.buffer);
+    ev.setUint32(0,0x06054b50,true); ev.setUint16(8,entries.length,true); ev.setUint16(10,entries.length,true);
+    ev.setUint32(12,cdSize,true); ev.setUint32(16,offset,true);
+    var out=new Uint8Array(offset+cdSize+22), p=0;
+    parts.forEach(function(b){ out.set(b,p); p+=b.length; });
+    central.forEach(function(b){ out.set(b,p); p+=b.length; });
+    out.set(eo,p); return out;
+  }
+
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function run(t,rpr){ return '<w:r>'+(rpr||'<w:rPr><w:rtl/></w:rPr>')+'<w:t xml:space="preserve">'+esc(t)+'</w:t></w:r>'; }
+  /* מאפייני הריצה של הפסקה עצמה — כך תווית "מחסן:" יוצאת מודגשת כמו שאר התוויות */
+  function paraRpr(tc){ var p=tc.lastIndexOf("<w:pPr>"); if(p<0) return null;
+    var e=tc.indexOf("</w:pPr>",p); if(e<0) return null;
+    var m=/<w:rPr>[\s\S]*?<\/w:rPr>/.exec(tc.slice(p,e)); return m?m[0]:null; }
+  function fillCell(tc,t,asLabel){ var i=tc.lastIndexOf("</w:p>");
+    return i<0?tc:tc.slice(0,i)+run(t,asLabel?paraRpr(tc):null)+tc.slice(i); }
+
+  /* מיפוי לפי אינדקס תא. (0,1,9) מסומן "כיוון:" בטופס העדכני ולא ממולא — אין שדה מחסן. */
+  /* מיפוי לפי אינדקס תא. (0,1,8)+(0,1,9) הם זוג תווית/ערך ריק בתבנית —
+     שם נכנס המחסן. הדגל הרביעי אומר "זו תווית" ולכן היא יוצאת מודגשת. */
+  function cellMap(d){ return [
+    [0,0,1,d.bldg],[0,0,3,d.floor],[0,0,5,d.unit],[0,0,7,d.model],[0,0,9,d.dir],
+    [0,1,1,d.rooms],[0,1,3,d.area],[0,1,5,d.balcony],[0,1,7,d.parking],
+    [0,1,8,d.storage?"מחסן:":"",1],[0,1,9,d.storage],
+    [1,0,1,d.estimate],[1,0,3,d.equity],
+    [2,0,1,d.b1name],[2,0,2,d.b2name],[2,1,1,d.b1id],[2,1,2,d.b2id],
+    [2,2,1,d.address],[2,3,1,d.phone],[2,4,1,d.email],
+    [2,2,2,d.b2address],[2,3,2,d.b2phone],[2,4,2,d.b2email]]; }
+
+  function patch(xml,d){
+    var bs=xml.indexOf("<w:body>"), be=xml.lastIndexOf("</w:body>");
+    if(bs<0||be<0) throw new Error("לא נמצא גוף המסמך בתבנית");
+    var body=xml.slice(bs,be), re=/<w:tbl>[\s\S]*?<\/w:tbl>/g, tbls=[], m;
+    while((m=re.exec(body))) tbls.push({start:m.index,end:m.index+m[0].length,text:m[0]});
+    if(tbls.length<3) throw new Error("התבנית מכילה "+tbls.length+" טבלאות במקום 3");
+    var by={}; cellMap(d).forEach(function(x){ (by[x[0]]=by[x[0]]||[]).push([x[1],x[2],x[3],x[4]]); });
+    for(var ti=tbls.length-1;ti>=0;ti--){
+      if(!by[ti]) continue;
+      var t=tbls[ti].text, rows=t.match(/<w:tr\b[\s\S]*?<\/w:tr>/g)||[], nr=rows.slice();
+      by[ti].forEach(function(rc){
+        var r=rc[0], c=rc[1], v=rc[2], lbl=rc[3];
+        if(v===""||v==null||!nr[r]) return;
+        var cells=nr[r].match(/<w:tc>[\s\S]*?<\/w:tc>/g)||[];
+        if(!cells[c]) return;
+        var filled=fillCell(cells[c],v,lbl), seen=0;
+        nr[r]=nr[r].replace(/<w:tc>[\s\S]*?<\/w:tc>/g,function(mm){ return (seen++===c)?filled:mm; });
+      });
+      rows.forEach(function(o,i){ t=t.replace(o,nr[i]); });
+      body=body.slice(0,tbls[ti].start)+t+body.slice(tbls[ti].end);
+    }
+    if(d.date)       body=body.replace(/(<w:t[^>]*>)תאריך:_+(<\/w:t>)/,'$1תאריך: '+esc(d.date)+'$2');
+    if(d.agent)      body=body.replace(/מנהל המכירות: _+/,'מנהל המכירות: '+esc(d.agent)+' ');
+    if(d.agentPhone) body=body.replace(/טלפון נייד: _+/,'טלפון נייד: '+esc(d.agentPhone));
+    return xml.slice(0,bs)+body+xml.slice(be);
+  }
+
+  return { previewXml:function(tplBytes,d){
+    var entries=readZip(tplBytes);
+    var doc=entries.filter(function(e){ return e.name==="word/document.xml"; })[0];
+    if(!doc) throw new Error("לא נמצא word/document.xml בתבנית");
+    return patch(new TextDecoder("utf-8").decode(doc.data),d);
+  },
+  fill:function(tplBytes,d){
+    var entries=readZip(tplBytes);
+    var doc=entries.filter(function(e){ return e.name==="word/document.xml"; })[0];
+    if(!doc) throw new Error("לא נמצא word/document.xml בתבנית");
+    doc.data=new TextEncoder().encode(patch(new TextDecoder("utf-8").decode(doc.data),d));
+    return writeZip(entries);
+  },
+  /* מילוי גנרי לפי תגי «...» בתבנית — משמש את נספח א1 */
+  fillTags:function(tplBytes,map){
+    var entries=readZip(tplBytes);
+    var doc=entries.filter(function(e){ return e.name==="word/document.xml"; })[0];
+    if(!doc) throw new Error("לא נמצא word/document.xml בתבנית");
+    var xml=new TextDecoder("utf-8").decode(doc.data);
+    Object.keys(map).forEach(function(k){ xml=xml.split(k).join(esc(String(map[k]==null?"":map[k]))); });
+    doc.data=new TextEncoder().encode(xml);
+    return writeZip(entries);
+  }};
+})();
+var NA_T1 = 35000, NA_PCT2 = 0.10, NA_PCT3 = 0.10, NA_GRACE_CUM = 0.25;
+
+var NA_RLM = "‏"; /* מצמיד את ה-₪ שבתבנית לשמאל המספר */
+
+var NA_U=["","אחד","שניים","שלושה","ארבעה","חמישה","שישה","שבעה","שמונה","תשעה"];
+var NA_TEENS={10:"עשרה",11:"אחד עשר",12:"שנים עשר",13:"שלושה עשר",14:"ארבעה עשר",15:"חמישה עשר",16:"שישה עשר",17:"שבעה עשר",18:"שמונה עשר",19:"תשעה עשר"};
+var NA_TENS={2:"עשרים",3:"שלושים",4:"ארבעים",5:"חמישים",6:"שישים",7:"שבעים",8:"שמונים",9:"תשעים"};
+var NA_H={1:"מאה",2:"מאתיים",3:"שלוש מאות",4:"ארבע מאות",5:"חמש מאות",6:"שש מאות",7:"שבע מאות",8:"שמונה מאות",9:"תשע מאות"};
+var NA_TH={1:"אלף",2:"אלפיים",3:"שלושת אלפים",4:"ארבעת אלפים",5:"חמשת אלפים",6:"ששת אלפים",7:"שבעת אלפים",8:"שמונת אלפים",9:"תשעת אלפים",10:"עשרת אלפים"};
+function naW999(n){
+  if(n===0) return "אפס";
+  var a=[], h=Math.floor(n/100), r=n%100;
+  if(h>0) a.push(NA_H[h]);
+  if(r>=10&&r<=19) a.push(NA_TEENS[r]);
+  else { var t=Math.floor(r/10), u=r%10; if(t>0)a.push(NA_TENS[t]); if(u>0)a.push(NA_U[u]); }
+  if(a.length===1) return a[0];
+  return a.slice(0,-1).join(" ")+" ו"+a[a.length-1];
+}
+function naWords(n){
+  n=Math.round(n);
+  var m=Math.floor(n/1e6), t=Math.floor((n%1e6)/1000), r=n%1000, p=[];
+  if(m===1)p.push("מיליון"); else if(m===2)p.push("שני מיליון"); else if(m>2)p.push(naW999(m)+" מיליון");
+  if(t>=1&&t<=10)p.push(NA_TH[t]); else if(t>10)p.push(naW999(t)+" אלף");
+  if(r>0)p.push(naW999(r));
+  return p.join(" ")+" שקלים חדשים בלבד";
+}
+
+function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
   var t = new URLSearchParams(location.search).get("t");
 
   /* הדף מוסתר עד שהיחידה נטענת. בלי זה נראה לרגע שלד עם כותרות בלי מספרים,
@@ -460,6 +608,16 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
     .then(function(u){
       /* unitNo=0 או תשובה שאינה JSON תקין = טוקן שלא קיים במרשם */
       if (!u || !u.unitNo) { notfound(); return; }
+      /* שני המסמכים פר-היחידה מופקים בדפדפן ולא מתארחים כקובץ, ולכן ה-url שלהם
+         הוא עוגן שהקוד תופס. שאר המסמכים נשארים כפי שהוגדרו בדף המקור. */
+      u.docs = Object.assign({}, __DR_DEFAULTS__.docs, {
+        bakasha: { url: "#dr-bakasha",
+          label: "בקשת ההצטרפות — הטופס של היחידה שלכם",
+          desc: "ממולא בנתוני היחידה. הפרטים האישיים והחתימה נעשים מול הנציג" },
+        nispachA1: { url: "#dr-nispach",
+          label: "נספח א׳1 — תשלומי הקרקע של היחידה",
+          desc: "לוח ארבעת התשלומים לפי מסלול המימון שנקבע ליחידה" }
+      });
       window.__DR_UNIT__ = u;
       main();
       reveal();
@@ -726,6 +884,89 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
     /* רשת ביטחון: בספארי במובייל pagehide נבלע לעיתים כשסוגרים את האפליקציה.
        דיווח מצטבר כל דקה מבטיח שלא נאבד את הביקור כולו. */
     setInterval(flush, 60000);
+  })();
+
+/* ═══ הפקת שני המסמכים פר-היחידה בדפדפן הלקוח ═══════════════════════════
+   שום קובץ אישי אינו מתארח: המסמך נבנה מהנתונים שבטוקן ברגע הלחיצה, ולכן
+   הוא תמיד תואם ליחידה ואי-אפשר להגיע אליו בלי הטוקן.
+   התבניות ריקות ויושבות באותו מקור (assets/) — לא נטענות חוצה-מקור, כדי
+   שלא ייחשף שם חשבון הגיטהאב בכלי הפיתוח של הלקוח. */
+  (function(){
+    var TPL = { bakasha:"assets/bakasha-template.docx", std:"assets/nispach-std.docx", grace:"assets/nispach-grace.docx" };
+    var cache = {};
+    function tpl(k){
+      if (cache[k]) return Promise.resolve(cache[k]);
+      return fetch(TPL[k], { cache:"force-cache" })
+        .then(function(r){ if(!r.ok) throw new Error("התבנית לא נמצאה ("+r.status+")"); return r.arrayBuffer(); })
+        .then(function(ab){ cache[k]=new Uint8Array(ab); return cache[k]; });
+    }
+    function money(n){ return n ? Math.round(n).toLocaleString("en-US")+" ₪" : ""; }
+    function localPhone(p){ p=String(p||""); return p.indexOf("972")===0 ? "0"+p.slice(3) : p; }
+    function safe(s){ return String(s==null?"":s).replace(/[\\\/:*?"<>|]/g,"-"); }
+    function save(bytes,name){
+      var url=URL.createObjectURL(new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"}));
+      var a=document.createElement("a"); a.href=url; a.download=name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); },10000);
+    }
+    var bn = UNIT.bldgShort || UNIT.building || "";
+
+    function makeBakasha(){
+      return tpl("bakasha").then(function(t){
+        save(DocxFill.fill(t, {
+          date:"", bldg:bn, floor:UNIT.floor, unit:UNIT.unitNo,
+          model:UNIT.model||"", dir:UNIT.dir||"", rooms:UNIT.rooms,
+          area:UNIT.sqm?UNIT.sqm+' מ"ר':"", balcony:UNIT.balcony?UNIT.balcony+' מ"ר':"",
+          parking:UNIT.parking||"", storage:"",
+          estimate:money(UNIT.estimate), equity:money(UNIT.equity),
+          b1name:UNIT.clientName||"", b1id:UNIT.b1id||"",
+          b2name:"", b2id:"", address:"", phone:localPhone(UNIT.phone), email:"",
+          b2address:"", b2phone:"", b2email:"",
+          agent:UNIT.agent||"", agentPhone:UNIT.agentPhone||""
+        }), safe("בקשת הצטרפות - "+bn+" יחידה "+UNIT.unitNo+" - "+(UNIT.clientName||""))+".docx");
+      });
+    }
+
+    function makeNispach(){
+      /* אותם קבועים ואותה נוסחה כמו במחירון — הם מחולצים משם ולא משוכפלים. */
+      var isGrace = UNIT.track === "B";
+      var land = Math.round(UNIT.landComponent), t2, t3;
+      if (isGrace) {
+        var g = UNIT.graceTotal;
+        t2 = Math.round(NA_PCT2*g) - NA_T1;
+        t3 = Math.round(NA_GRACE_CUM*g) - Math.round(NA_PCT2*g);
+      } else {
+        t2 = Math.round(NA_PCT2*UNIT.estimate) - NA_T1;
+        t3 = Math.round(NA_PCT3*UNIT.estimate);
+      }
+      var t4 = land - NA_T1 - t2 - t3;
+      var m = function(n){ return naMoney(n)+" "+NA_RLM; };
+      /* ת.ז. אינה תמיד ידועה בשליחה — קו לחתימה ידנית במקומה, כמו התאריך. */
+      return tpl(isGrace?"grace":"std").then(function(t){
+        save(DocxFill.fillTags(t, {
+          "«F1»":bn, "«F2»":UNIT.floor, "«F3»":UNIT.unitNo, "«F4»":UNIT.rooms,
+          "«F14»":m(land), "«F19»":naWords(land),
+          "«M_01»":m(t2), "«M_011»":m(t3), "«F18»":m(t4),
+          "«S1»":UNIT.clientName||"", "«ID1»":UNIT.b1id||"________________",
+          "«S2»":"", "«ID2»":"", "«DATE»":"________________"
+        }), safe("נספח א1 - "+bn+" יחידה "+UNIT.unitNo+" - "+(UNIT.clientName||"")+(isGrace?" (גרייס)":""))+".docx");
+      });
+    }
+
+    /* הכרטיסים מרונדרים ע"י הדף עצמו כ-<a href>; תופסים אותם לפי העוגן. */
+    [["#dr-bakasha", makeBakasha, "בקשת הצטרפות"],
+     ["#dr-nispach", makeNispach, "נספח א׳1"]].forEach(function(row){
+      var a = document.querySelector('#docList a[href="' + row[0] + '"]');
+      if (!a) return;
+      a.addEventListener("click", function(e){
+        e.preventDefault();
+        var d = a.querySelector(".d"), was = d ? d.textContent : "";
+        if (d) d.textContent = "מכין את המסמך…";
+        row[1]()
+          .then(function(){ if (d) d.textContent = was; sendEvent("doc_make", row[2]); })
+          .catch(function(err){ if (d) d.textContent = "לא הצלחנו להכין את המסמך — נסו שוב"; });
+      });
+    });
   })();
 
   window.addEventListener = _add;
