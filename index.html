@@ -1,23 +1,736 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex,nofollow,noarchive,noimageindex">
+<meta name="robots" content="noindex">
 <title>FOREVER · חדר מידע לרוכשים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;800&display=swap" rel="stylesheet">
 <style>
-  body{margin:0;background:#f4f5f3;color:#2b2b28;font-family:Heebo,system-ui,-apple-system,sans-serif;}
-  .wrap{max-width:520px;margin:16vh auto;padding:0 22px;text-align:center;}
-  h1{font-size:19px;font-weight:800;margin:0 0 10px;}
-  p{font-size:14px;line-height:1.9;color:#6a6a64;margin:0;}
+:root{
+  --navy:#0f1e3d; --navy-2:#1c3461; --navy-3:#2c4a86;
+  --gold:#c9a227; --gold-doc:#b08d14; --gold-ink:#7a610e; --gold-wash:#fbf7ea;
+  --bg:#faf8f4; --surface:#fff; --tint:#ece7db;
+  --ink:#17203a; --ink-2:#4a5568; --line:#e6e0d4; --ok:#1d7a4f;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --t-2xs:12px; --t-xs:13px; --t-sm:15px; --t-md:16.5px; --t-lg:21px; --t-xl:26px; --t-2xl:33px; --t-3xl:42px;
+  --r:12px;
+  --font-body:'Heebo','Segoe UI',Arial,sans-serif;
+  --e1:0 1px 2px rgba(15,30,61,.04), 0 8px 24px -14px rgba(15,30,61,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{font-family:var(--font-body);background:var(--bg);color:var(--ink);font-size:var(--t-md);line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--navy-3)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+.wrap{max-width:960px;margin:0 auto;padding:0 var(--s5)}
+.read{max-width:680px}
+.skip{position:absolute;inset-inline-start:-9999px;top:0;background:var(--navy);color:#fff;padding:var(--s3) var(--s5);z-index:200}
+.skip:focus{inset-inline-start:0}
+
+/* hero */
+.hero{background:linear-gradient(155deg,var(--navy),var(--navy-2) 72%,#26436f);color:#fff;padding:var(--s7) 0 var(--s6)}
+.hero .eyebrow{font-size:var(--t-xs);letter-spacing:.08em;color:var(--gold);font-weight:600;margin-bottom:var(--s2)}
+.hero h1{font-size:clamp(var(--t-xl),5vw,var(--t-3xl));font-weight:800;line-height:1.15;letter-spacing:-.02em}
+.hero p{margin-top:var(--s2);font-size:var(--t-md);color:#c3cee5;max-width:560px}
+.chip-row{margin-top:var(--s5);display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);padding-top:var(--s4);border-top:1px solid rgba(255,255,255,.14)}
+.chip .k{font-size:var(--t-2xs);color:#93a4c4}
+.chip .v{font-size:var(--t-sm);font-weight:600;color:#fff}
+.chip.hi .v{color:var(--gold);font-size:var(--t-lg);font-weight:800}
+.flag{margin-top:var(--s4);display:inline-block;background:#8a1f2d;color:#fff;font-size:var(--t-2xs);font-weight:600;padding:3px var(--s3);border-radius:999px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;background:rgba(15,30,61,.97);backdrop-filter:blur(8px)}
+nav .wrap{display:flex;overflow-x:auto;scrollbar-width:none;padding:0 var(--s4)}
+nav .wrap::-webkit-scrollbar{display:none}
+nav a{color:#cdd6e8;text-decoration:none;padding:var(--s3) var(--s4);font-size:var(--t-sm);font-weight:600;white-space:nowrap;border-bottom:2px solid transparent}
+nav a:hover{color:var(--gold);border-color:var(--gold)}
+
+/* sections — הדוקות: התוכן ממילא מקופל */
+section{padding:var(--s7) 0}
+section.alt{background:var(--tint)}
+section.dark{background:var(--navy);color:#dbe3f0}
+section.dark h2{color:#fff}
+section.dark .eyebrow-s{color:var(--gold)}
+section.dark .lede{color:#b9c6de}
+.eyebrow-s{font-size:var(--t-xs);letter-spacing:.08em;color:var(--gold-ink);font-weight:600;margin-bottom:var(--s2)}
+.eyebrow-s::before{content:"";display:block;width:34px;height:3px;background:var(--gold-doc);border-radius:2px;margin-bottom:var(--s3)}
+h2{font-size:var(--t-lg);font-weight:800;line-height:1.35;letter-spacing:-.01em}
+.lede{margin-top:var(--s2);color:var(--ink-2);font-size:var(--t-md)}
+h3{font-size:var(--t-lg);font-weight:600;margin-bottom:var(--s2);letter-spacing:-.005em}
+h4{font-size:var(--t-xs);font-weight:600;color:var(--ink-2);letter-spacing:.06em;line-height:1.45;margin:var(--s5) 0 var(--s2)}
+p+p{margin-top:var(--s2)}
+.mt4{margin-top:var(--s4)} .mt5{margin-top:var(--s5)}
+
+/* one surface */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) var(--s5);box-shadow:var(--e1)}
+.grid{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.fact{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--gold-doc);border-radius:var(--r);padding:var(--s4) var(--s5);box-shadow:var(--e1)}
+.fact h3{font-size:var(--t-md);font-weight:800;color:var(--navy);margin-bottom:var(--s1);line-height:1.35}
+.fact p{font-size:var(--t-sm);color:var(--ink-2);line-height:1.55}
+
+/* fold */
+.fold{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:var(--s2);box-shadow:var(--e1)}
+.fold>summary{cursor:pointer;list-style:none;padding:var(--s3) var(--s4);font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:var(--s3);font-size:var(--t-sm);line-height:1.4}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::after{content:"";width:8px;height:8px;flex:0 0 8px;border-inline-end:2px solid var(--gold-doc);border-block-end:2px solid var(--gold-doc);transform:rotate(45deg);transition:transform .2s;margin-top:-3px}
+.fold[open]>summary::after{transform:rotate(-135deg);margin-top:3px}
+.fold .body{padding:0 var(--s4) var(--s4);font-size:var(--t-sm);line-height:1.7;color:var(--ink-2)}
+.fold .body b{color:var(--ink);font-weight:600}
+.fold .body ul{padding-inline-start:var(--s4);margin:var(--s2) 0}
+.fold .body li{margin-bottom:var(--s1)}
+.fold .ref{display:block;margin-top:var(--s2);font-size:var(--t-2xs);color:var(--gold-ink)}
+.fold.plain{background:transparent;border:none;box-shadow:none}
+.fold.plain>summary{padding:var(--s2) 0;color:var(--navy-3)}
+.fold.plain .body{padding:0 0 var(--s3)}
+
+/* tables */
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:var(--t-sm);background:var(--surface)}
+th{background:var(--navy);color:#fff;font-weight:600;padding:var(--s2) var(--s3);text-align:right;font-size:var(--t-2xs)}
+td{padding:var(--s2) var(--s3);border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:left;direction:ltr;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sum-row td{background:var(--tint);font-weight:800}
+.kv td:first-child{color:var(--ink-2);width:54%}
+.kv2 td:first-child b{font-weight:600;color:var(--ink)}
+.kv2 .sub{display:block;font-size:var(--t-2xs);color:var(--ink-2);line-height:1.3}
+.kv2 td{padding:var(--s2) var(--s3)}
+
+.seg-note{font-size:var(--t-xs);color:var(--ink-2);margin-bottom:var(--s3)}
+
+/* sub-head: מעבר בין בלוקים בתוך מקטע */
+.subhead{margin:var(--s7) 0 var(--s4);padding-top:var(--s5);border-top:2px solid var(--line)}
+.subhead h3{font-size:var(--t-md);font-weight:800;color:var(--navy);letter-spacing:-.01em;margin:0}
+.subhead .sub{margin-top:var(--s2);font-size:var(--t-xs);color:var(--ink-2);line-height:1.6}
+
+/* stat tiles + payment list */
+.stats{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.stat{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--gold-doc);border-radius:var(--r);padding:var(--s4) var(--s5);box-shadow:var(--e1)}
+.stat .k{font-size:var(--t-xs);font-weight:600;color:var(--ink-2);line-height:1.45}
+.stat .v{font-size:var(--t-xl);font-weight:800;color:var(--navy);direction:ltr;text-align:right;line-height:1.2;margin:var(--s1) 0;font-variant-numeric:tabular-nums}
+.stat .s{font-size:var(--t-2xs);color:var(--ink-2);line-height:1.6}
+.pay{list-style:none;display:grid;gap:var(--s2)}
+.pay li{display:flex;align-items:baseline;gap:var(--s3);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3) var(--s4);box-shadow:var(--e1)}
+.pay li b{font-size:var(--t-lg);font-weight:800;color:var(--navy);direction:ltr;min-width:116px;text-align:right;font-variant-numeric:tabular-nums}
+.pay li span{font-size:var(--t-sm);color:var(--ink-2);line-height:1.4}
+.pay li.sum{background:var(--tint);border-color:var(--gold-doc)}
+.stat .fold{margin:var(--s2) 0 0}
+.stat .fold>summary{justify-content:flex-start;gap:var(--s2);font-size:var(--t-2xs);font-weight:600;color:var(--navy-3);padding:var(--s2) 0 0}
+.stat .fold>summary::after{width:6px;height:6px;flex:0 0 6px}
+.stat .fold .body{padding:var(--s2) 0 0}
+.stat .fold table{font-size:var(--t-2xs)}
+.stat .fold td{padding:var(--s1) 0}
+.stat .fold .sum-row td{background:transparent;font-weight:700}
+.grand{background:var(--navy);color:#fff;border-radius:var(--r);padding:var(--s4) var(--s5);box-shadow:var(--e1)}
+.grand .k{font-size:var(--t-xs);color:var(--gold);font-weight:600;line-height:1.45}
+.grand .v{font-size:var(--t-2xl);font-weight:800;direction:ltr;text-align:right;line-height:1.2;margin:var(--s1) 0;font-variant-numeric:tabular-nums}
+.grand .s{font-size:var(--t-2xs);color:#c3cee5;line-height:1.6}
+
+/* steps */
+.steps{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fit,minmax(170px,1fr));counter-reset:st}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3) var(--s4);font-size:var(--t-sm);line-height:1.45}
+.step::before{counter-increment:st;content:counter(st);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--gold-doc);color:#fff;font-size:var(--t-2xs);font-weight:800;margin-inline-end:var(--s2)}
+.step b{color:var(--navy)}
+.step .d{display:block;color:var(--ink-2);font-size:var(--t-xs);margin-top:2px}
+
+/* status table */
+.status td:nth-child(2){white-space:nowrap;color:var(--gold-ink);font-weight:600;font-size:var(--t-xs)}
+section.dark table{background:transparent;color:#dbe3f0}
+section.dark td{border-color:rgba(255,255,255,.14)}
+section.dark .status td:nth-child(2){color:var(--gold)}
+.status td.st{width:34px;padding:var(--s2) 0 var(--s2) var(--s2);text-align:center;font-size:18px;line-height:1.2;vertical-align:middle}
+.status .done td.st::before{content:"✓";color:#52c98a;font-weight:800;font-size:20px}
+.status .now td.st::before{content:"⏳";font-size:17px}
+.status .est td.st::before{content:"";display:block;width:7px;height:7px;margin:0 auto;border-radius:50%;border:1.5px solid rgba(255,255,255,.28)}
+.status .now td{background:rgba(201,162,39,.10)}
+.status .now td:nth-child(3){color:#fff}
+section.dark .est td{color:#93a4c4;font-style:italic}
+
+/* docs */
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:var(--s2)}
+.doc{display:flex;gap:var(--s3);align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3) var(--s4);text-decoration:none;color:var(--ink);transition:border-color .15s}
+.doc:hover{border-color:var(--gold-doc);box-shadow:var(--e1)}
+.doc .ic{width:34px;height:34px;flex:0 0 34px;border-radius:9px;background:var(--tint);display:grid;place-items:center;font-size:var(--t-md)}
+.doc .t{font-weight:600;font-size:var(--t-sm);color:var(--navy);line-height:1.3}
+.doc .d{font-size:var(--t-2xs);color:var(--ink-2)}
+.doc.pending{opacity:.5;pointer-events:none}
+.doc.pending .d::after{content:" · יתווסף עם הפרסום"}
+
+/* ai */
+.ai{background:var(--gold-wash);border:1px solid #e7d9ae;border-inline-start:4px solid var(--gold-doc);border-radius:var(--r);padding:var(--s4) var(--s5);box-shadow:var(--e1)}
+.ai h3{color:var(--navy);font-size:var(--t-md);font-weight:800}
+.ai p{color:#5c4d1e;font-size:var(--t-sm)}
+.btn{display:inline-block;background:var(--gold);color:var(--navy);font-weight:600;font-size:var(--t-sm);padding:var(--s2) var(--s4);border-radius:10px;border:none;cursor:pointer;text-decoration:none;font-family:inherit}
+.btn:hover{background:#d8b23a}
+.copied{font-size:var(--t-xs);color:var(--ok);margin-inline-start:var(--s2);opacity:0;transition:opacity .3s}
+.copied.show{opacity:1}
+
+/* chat (כבוי בדגל) */
+#chatFab,#chatPanel{display:none}
+
+footer{background:var(--navy);color:#a9b5cd;padding:var(--s6) 0;font-size:var(--t-xs);line-height:1.7}
+footer b{color:#e6ebf5}
+footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
+
+@media (max-width:640px){
+  .wrap{padding:0 var(--s4)}
+  nav .wrap{justify-content:space-between;padding:0 var(--s1)}
+  nav a{flex:1 1 0;text-align:center;padding:var(--s3) 2px;font-size:var(--t-xs)}
+  .kv td:first-child{width:auto}
+  .kv td.num{padding-inline-start:var(--s2)}
+  section{padding:var(--s6) 0}
+  .hero{padding:var(--s5) 0 var(--s4)}
+  .chip-row{margin-top:var(--s4);padding-top:var(--s3)}
+  main{padding-bottom:var(--s4)}
+  .fold>summary{padding:10px var(--s3)}
+  .steps{gap:var(--s1)}
+  .step{padding:var(--s2) var(--s3)}
+  table.stack, table.stack tbody, table.stack tr, table.stack td{display:block;width:auto}
+  table.stack tr:first-child{display:none}
+  table.stack tr{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:var(--s2) var(--s3);margin-bottom:var(--s2)}
+  table.stack td{border:none;padding:2px 0;text-align:right}
+  table.stack td:empty{display:none}
+  table.stack td::before{content:attr(data-label);display:block;font-size:var(--t-2xs);color:var(--ink-2);font-weight:600}
+  table.stack td.num{direction:rtl;text-align:right;font-weight:600}
+  table.stack tr.sum-row{background:var(--tint);border-color:var(--gold-doc)}
+}
+@media print{nav,.ai,.btn{display:none}body{background:#fff}.fold .body{display:block!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>הקישור אינו זמין</h1>
-  <p>חדר המידע נמסר בקישור אישי. אם הקישור הגיע אליכם ואינו נפתח,
-     פנו אלינו ונשלח קישור מעודכן.<br>
-     קבוצת דוידסון · 03-9798889 · office@davidsonh.co.il</p>
+<a class="skip" href="#main">דילוג לתוכן</a>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">קבוצת דוידסון · FOREVER · פארק הים, ראשון לציון</div>
+    <h1>חדר המידע שלכם</h1>
+    <div class="chip-row" id="unitChip"></div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#numbers">המספרים</a>
+  <a href="#start">בקצרה</a>
+  <a href="#status">הפרויקט</a>
+  <a href="#faq">ההסכם</a>
+  <a href="#docs">מסמכים</a>
+</div></nav>
+
+<main id="main">
+
+<!-- ===== 1. המספרים ===== -->
+<section id="numbers">
+  <div class="wrap">
+    <div class="read">
+      <div class="eyebrow-s">היחידה שלכם</div>
+      <h2>המספרים</h2>
+    </div>
+    <div class="stats mt4">
+      <div class="stat"><div class="k">אמדן היחידה</div><div class="v" id="stEst"></div><div class="s" id="stSplit"></div></div>
+      <div class="stat"><div class="k" id="stTaxK"></div><div class="v" id="stTax"></div><div class="s" id="stTax2"></div></div>
+      <div class="stat"><div class="k">שכר טרחת עורכי הדין</div><div class="v" id="stFee"></div><div class="s" id="stFeeS"></div><details class="fold plain"><summary id="feeSummary"></summary><div class="body"><table id="feeTable" class="kv2"></table></div></details></div>
+      <div class="stat" id="stIntCard"><div class="k">הערכת ריבית</div><div class="v" id="stInt"></div><div class="s" id="stIntS"></div></div>
+    </div>
+    <div class="grand mt4"><div class="k">סה"כ ידוע היום</div><div class="v" id="stGrand"></div><div class="s" id="stGrandS"></div></div>
+    <div class="subhead">
+      <h3>ההון העצמי — כמה משלמים, ומתי</h3>
+      <p class="sub" id="eqNote"></p>
+    </div>
+    <ol class="pay" id="payList"></ol>
+    <p class="seg-note" id="restNote" style="margin-top:var(--s3)"></p>
+  </div>
+</section>
+
+<!-- ===== 2. בקצרה ===== -->
+<section id="start" class="alt">
+  <div class="wrap">
+    <div class="read">
+      <div class="eyebrow-s">בקצרה</div>
+      <h2>שלושה דברים שנותנים ביטחון</h2>
+    </div>
+    <div class="grid mt4">
+      <div class="fact"><h3>הכסף הופך לקרקע על שמכם</h3><p>התשלום על הקרקע מקנה זכות קניינית רשומה בטאבו — הערת אזהרה ואחריה בעלות בטאבו על חלק המשקף את היחידה שלכם.</p></div>
+      <div class="fact"><h3>הכסף לא עובר דרך המארגן</h3><p>ההון העצמי מופקד בחשבון נאמנות על שם עורכי הדין של הרוכשים בפרויקט ומשמש לרכישת המקרקעין על שמכם. לקבלן משלמים בדיעבד, על עבודה שבוצעה, באישור המפקח והגורם המממן.</p></div>
+      <div class="fact"><h3>אפשר למכור גם לפני המסירה</h3><p>את הזכויות ביחידה שרכשתם אפשר למכור בכל עת.</p></div>
+    </div>
+    <div class="read mt5">
+      <p>במבנה הזה גלום היתרון: אותה דירה מקבלן יקרה יותר — אנו מעריכים במיליון עד מיליון וחצי ₪.</p>
+    </div>
+    <div class="steps mt5">
+      <div class="step"><b>הצטרפות</b><span class="d">הון עצמי בנאמנות · אתם כאן</span></div>
+      <div class="step"><b>גיבוש הקבוצה</b><span class="d">עד 31.08.2027 · אם הקבוצה לא תתגבש — מלוא הכסף חוזר</span></div>
+      <div class="step"><b>היתר ובנייה</b><span class="d">קבלן מפתח במחיר פאושלי, ליווי פיננסי</span></div>
+      <div class="step"><b>מסירה ורישום</b><span class="d">הערכה: מחצית שנייה של 2030</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 3. הפרויקט ===== -->
+<section id="status" class="dark">
+  <div class="wrap">
+    <div class="read">
+      <div class="eyebrow-s">סטטוס תכנוני · עדכון אוגוסט 2026</div>
+      <h2>איפה הפרויקט עומד</h2>
+    </div>
+    <div class="tbl mt4"><table class="status">
+      <tr class="done"><td class="st"></td><td>מרץ 2026</td><td>צוות יועצי התכנון גובש — אדריכל, קונסטרוקטור ו-14 יועצים</td></tr>
+      <tr class="done"><td class="st"></td><td>מאי 2026</td><td>תכנון ראשוני הוצג לעירייה</td></tr>
+      <tr class="done"><td class="st"></td><td>יוני 2026</td><td>ועדת התכנון — אישור עקרוני לתכנית הבינוי של השכונה</td></tr>
+      <tr class="done"><td class="st"></td><td>יולי 2026</td><td>ישיבת קדם-תכנון מול העירייה — אור ירוק לתכנון</td></tr>
+      <tr class="now"><td class="st"></td><td>אוג'–דצמ' 2026</td><td><b>השלב הנוכחי:</b> תיאום תכנון ותכנית עיצוב אדריכלית מול העירייה</td></tr>
+      <tr class="est"><td class="st"></td><td>12/2026–01/2027 · צפי</td><td>הגשת בקשה להיתר מלא, ובמקביל להיתר חפירה ודיפון</td></tr>
+      <tr class="est"><td class="st"></td><td>יוני–יולי 2027 · צפי</td><td>היתר חפירה ודיפון ועלייה על הקרקע</td></tr>
+      <tr class="est"><td class="st"></td><td>מרץ 2028 · צפי</td><td>היתר מלא והמשך רציף של הבנייה</td></tr>
+      <tr class="est"><td class="st"></td><td>מחצית ב' 2030</td><td>מסירה — הערכה תכנונית, כפופה להליכי הרישוי</td></tr>
+    </table></div>
+    <p class="seg-note" style="color:#93a4c4;margin-top:var(--s3)">השורות המסומנות "צפי" הן הערכה תכנונית הכפופה להליכי הרישוי — לא התחייבות למועד.</p>
+  </div>
+</section>
+
+<!-- ===== 4. מה ההסכם אומר ===== -->
+<section id="faq">
+  <div class="wrap">
+    <div class="read">
+      <div class="eyebrow-s">מה ההסכם אומר</div>
+      <h2>השאלות שרוכשים שואלים — והתשובות</h2>
+      <p class="lede">כל תשובה מפנה לסעיפים בהסכם.</p>
+    </div>
+
+    <h4>כסף וזמנים</h4>
+    <details class="fold"><summary>מתי ההיתר, ומתי המסירה?</summary><div class="body">
+      <p><b>עד קבלת היתר הבנייה</b> — התב"ע החלה על המגרש (413-1275783) בתוקף, ולתוכנית מתאר יש מעמד של חוק. הבקשה להיתר מוגשת במסגרת הזכויות שהתב"ע מקנה, ולכן השאלה היא מתי יינתן ההיתר — לא אם. לוח הזמנים עצמו תלוי ברשויות, הוועדה המקומית והעירייה, ואינו בשליטת המארגן, ולכן ההסכם אינו יוצר התחייבות משפטית למועד. גם יזם רגיל מתחייב למועד מסירה רק אחרי שיש היתר.</p>
+      <p><b>מרגע קבלת היתר הבנייה</b> — מבנה העסקה לא שונה ממבנה יזמי. קבלן הביצוע מקבל צו תחילת עבודה ומתחייב ללוח זמנים ומועד מסירה סופי, לרבות פיצוי ותשלום על איחור במסירה.</p>
+      <p>לוח הזמנים המעודכן — במדור "הפרויקט" למטה.</p>
+      <span class="ref">בהסכם: 2.9 · 14.4.4</span></div></details>
+
+    <details class="fold"><summary>אין ערבות חוק מכר — מה מגן על הכסף?</summary><div class="body">
+      <p>מערך הבטוחות מגן על כספי הרוכש מהשקל הראשון ועד האחרון. במקום ערבות חוק מכר, יש בעלות קניינית רשומה בקרקע ומנגנון שחרור כספים מפוקח. יתרון ייחודי לבעלות בקרקע הוא האפשרות למכור את היחידה בכל נקודת זמן שהרוכש בוחר, בשונה ממכירת הדירה רק לאחר מסירת הדירה ברכישת דירה מקבלן.</p>
+      <p>אכן, אין ערבות חוק מכר, וההסכם אומר זאת במפורש (סעיף 2.11). הערבות נועדה לפתור סיכון אחד: שהכסף שלכם יושב אצל היזם עד המסירה. במבנה הזה הסיכון לא נוצר מלכתחילה, כי הכסף אינו יושב אצל אף יזם.</p>
+      <p>מה כן עומד מאחורי הכסף:</p>
+      <ul><li><b>הקרקע</b> — התמורה עבור הקרקע הופכת מיד לבעלות בנכס רשום: הערת אזהרה לטובת הרוכש, או החזקה בנאמנות עבורו על ידי נאמן ייעודי עד הרישום (סעיף 3.10, נספח ה'), ולאחר מכן רישום בעלות. מדובר בבטוחה קניינית במעלה מדרגה ראשונה.</li>
+      <li><b>כספי הבנייה</b> — נמצאים בחשבון ליווי סגור של הפרויקט ואינם משולמים מראש לאיש. משלמים לקבלן רק בדיעבד, על שלב שבוצע בפועל. כל תשלום מאושר על ידי המפקח ההנדסי, שמאי הפרויקט, הנציגות והגורם המממן (סעיף 14.4.1). המנגנון נועד למנוע מצב שבו רוכש משלם עבור בנייה שטרם בוצעה.</li>
+      <li><b>עד אז — הכסף בנאמנות:</b> חשבון נאמנות ייעודי המנוהל על ידי היועצים המשפטיים, בהשקעה סולידית ונזילה בלבד (סעיפים 4.3, 4.5–4.7), ובהמשך חשבון פרויקט בליווי פיננסי מלא, עם דו"ח אפס ודו"חות שמאי שוטפים במשך כל תקופת הפרויקט עד למסירה.</li>
+      <li><b>מהקבלן — ערבות ביצוע על תקציב הבנייה:</b> ערבות בנקאית אוטונומית שהקבלן יעמיד לקבוצה להבטחת ביצוע העבודה, בשיעור שלא יפחת מדרישת הגורם המממן; המקובל 5%–7% מתקציב הבנייה (סעיף 14.4.2). בנוסף — ערבות בדק וטיב לאחר טופס 4 (סעיף 14.4.3).</li>
+      <li><b>ואם הקבוצה כלל לא תתגבש</b> — עד 31.08.2027, כל הסכומים ששולמו מוחזרים לרוכשים (סעיף 3.4).</li></ul>
+      <span class="ref">בהסכם: 2.11 · 3.4 · 3.10 · 4.3 · 4.5–4.7 · 14.4.1–14.4.3 · נספח ה'</span></div></details>
+
+    <details class="fold"><summary>למה "אומדן" ולא מחיר סופי?</summary><div class="body">
+      <p>בקבוצת רכישה אין ולא יכולה להיות התחייבות למחיר סופי. מחיר סופי היה הופך את העסקה לעסקה יזמית, ואיתה נעלם היתרון בעלויות. ההסכם זהה לכל הרוכשים, כמו בכל פרויקט שמסרנו במבנה הזה.</p>
+      <p>הדרך המקצועית לצמצם את החשיפה היא לקבע מראש כל מה שניתן לקבע, ולתחום בשקיפות את מה שנשאר פתוח:</p>
+      <ul><li><b>עלות הקרקע — כ-50% מהאמדן</b> (בהתאם ליחידה) — קבועה וסופית כבר בתחילת הדרך. עלות החלק בקרקע של כל יחידה נקובה בסכום מוגדר וסופי בנספח א'1.</li>
+      <li><b>עלות ההקמה</b> — מתומחרת על ידי שמאי חיצוני המאושר על ידי הגורם המממן. האומדן מבוסס על דו"ח שמאי מקרקעין מיום 02.07.2026, המצורף להסכם השיתוף כנספח ז'.</li>
+      <li><b>עלות הבנייה תינעל בחוזה פאושלי</b> — ההתקשרות עם הקבלן תיעשה בשיטת "עד-מפתח" (Turn-Key) ובתמורה פאושלית (סעיף 14.3): מחיר קבוע מראש לביצוע.</li>
+      <li><b>מה שנשאר פתוח</b> — רכיב ההקמה, <span id="openPct"></span> מהאמדן ביחידה שלכם, ומוצג מראש. ההסכם מפרט במפורש מה אינו כלול באומדן: מס רכישה, שכר טרחת היועצים המשפטיים, הוצאות מימון, והפרשי הצמדה למדד תשומות הבנייה.</li></ul>
+      <span class="ref">בהסכם: 5.17 · 2.14 · 3.8 · 14.3 · נספח א'1 · נספח ז'</span></div></details>
+
+    <details class="fold"><summary>הלוואת שלב הקרקע והחיתום — מה חותמים ומול מי</summary><div class="body">
+      <p>הגורם המממן מלווה את הפרויקט החל משלב הקרקע, ולאחר מכן לשלב הבנייה ועד לסיום בניית הפרויקט. ההסמכה ליועצים המשפטיים של הרוכשים לחתום בשם כלל הרוכשים היא הכרח טכני — אי אפשר להחתים 118 חברים על מסמכי מימון בלוח זמנים של תשלום עבור קרקע.</p>
+      <p>לשלב הקרקע חברת המימון עושה "חיתום רך" — בדיקה כללית שאין נורות אדומות — והחיתום המלא נעשה לפני שלב הבנייה, עם התראה למי שלא עומד בתנאים. מי שלא יאושר בחיתום, או שבוחר במסלול הון עצמי מלא, מפקיד את מלוא עלות היחידה תוך 10 ימים מהדרישה — ולכן החיתום המלא נעשה מוקדם, לא ברגע האחרון. מי שלא נזקק לאשראי חותם על מסמכי המימון בכל מקרה, ומקבל מכתב החרגה מהגורם המממן, בכפוף למדיניותו.</p>
+      <p id="trackPara"></p>
+      <span class="ref">בהסכם: 6.9 · 6.10 · 13.4 · נספח יד'</span></div></details>
+
+    <details class="fold"><summary>עורכי הדין — מה כולל ה-1.1%, ומה לא</summary><div class="body">
+      <p>היועצים המשפטיים — אפשטיין רוזנבלום מעוז — מייצגים את הקבוצה כמכלול בעסקאות הקבוצה: רכישת הקרקע, הסכם השיתוף, המימון, הסכם הקבלן, רישום הבית המשותף ורישום הזכויות. זה היקף השירות שבגינו משולם שכר הטרחה, והוא היקף מקובל בקבוצת רכישה.</p>
+      <p>ההסכם אומר מראש שעורכי הדין לא ייצגו בסכסוך מול המארגן. זו לא "נטישה" — אלה כללי אתיקה: עורך דין שליווה את הקמת הפרויקט אינו יכול לייצג צד אחד נגד השני. במקרה של סכסוך, הנציגות מוסמכת לשכור ייעוץ משפטי עצמאי במימון הקבוצה.</p>
+      <span class="ref">בהסכם: 13.1–13.3 · נספח יא'</span></div></details>
+
+    <details class="fold"><summary>למכור לפני המסירה — איך וכמה זה עולה</summary><div class="body">
+      <p>את הזכויות ביחידה אפשר להעביר גם לפני המסירה, באישור הגורם המממן ובתנאי ההסכם. העלות: 0.8% ליועצים המשפטיים ו-10,000 ₪ לחברת הניהול.</p>
+      <span class="ref">בהסכם: 22 · 22.2.4 · 22.2.6</span></div></details>
+
+    <h4>מי מחליט ומי מגן עליכם</h4>
+    <details class="fold"><summary>המוכרת והמארגן קשורים — מה זה אומר עליי?</summary><div class="body">
+      <p>המוכרת — ק.ד.ש דוידסון גרדן בע"מ, בעלת הקרקע מכוח זכייה במכרז 9/2026 של עיריית ראשון לציון — והמארגן הן חברות קשורות, וזה מוצהר בהסכם. מחיר הקרקע לקבוצה נבחן על ידי שמאי מקרקעין חיצוני (דו"ח השמאי — נספח ז') והוא חלק מאמדן היחידה. דמי הארגון קבועים (נספח י'), כך שלמארגן אין תמריץ כלכלי להעלאת עלויות. המוכרת אינה רשאית לכהן בנציגות.</p>
+      <span class="ref">בהסכם: 2.10 · 2.14 · 3.5.3 · 3.13 · נספח ז'</span></div></details>
+
+    <details class="fold"><summary>מה אם דוידסון תיקלע לקשיים?</summary><div class="body">
+      <p>רכישת הקרקע מהמוכרת היא עסקת מכר מקרקעין רגילה, עם הבטוחות המקובלות. היא נעשית מול חברה מקבוצת דוידסון בדיוק כפי שהייתה נעשית מול צד שלישי, ועד הרישום הכסף מוחזק בנאמנות. בשונה מיזם, המארגן אינו מחזיק בכספי החברים ואינו בעל הקרקע אחרי המכר. אם המארגן ייקלע לקשיים, הקבוצה ממשיכה להתקיים כבעלת הקרקע, והנציגות רשאית להחליף את מנהל הפרויקט. הכסף והרישום אצל היועצים המשפטיים, הנאמן והגורם המממן.</p>
+      <span class="ref">בהסכם: 12.2 · 3.13</span></div></details>
+
+    <details class="fold"><summary>ייפוי הכוח הבלתי חוזר — למה הוא נדרש ומה הוא לא מאפשר</summary><div class="body">
+      <p>בלי ייפוי כוח בלתי חוזר קבוצת רכישה לא יכולה לפעול. רכישת קרקע, הסכם קבלן, שעבוד לגורם המממן ורישום בית משותף אינם אפשריים בהחתמה פרטנית של 118 חברים. הוא נדרש גם על ידי הגורם המממן. כל רוכש דירה מקבלן חותם על ייפוי כוח דומה, וכך גם כל נוטל משכנתא.</p>
+      <p>ייפוי הכוח ניתן "לשם ביצוע הסכם השיתוף" ומיופי הכוח רשאים להשתמש בו רק למטרות ההסכם ובנסיבות שהוא קובע. הסמכויות של ביטול, כינוס ומכירה ניתנות למימוש רק אחרי שהתקיימו תנאי המכר הכפוי — הפרה יסודית, הודעה ותקופת תיקון. "שיקול הדעת" מתייחס לאופן הביצוע, לא לשאלה אם התקיימו התנאים. מיופי הכוח הם עורכי דין הכפופים לחובות נאמנות, ושימוש לרעה מקים עילת תביעה אישית נגדם.</p>
+      <span class="ref">בהסכם: 13.6–13.7 · 24.2.3 · 24.7</span></div></details>
+
+    <details class="fold"><summary>מה קורה אם חבר לא משלם, ואיך מיישבים מחלוקות?</summary><div class="body">
+      <p>מי שמשלם בזמן לא נפגש עם המנגנונים האלה, והם קיימים כדי להגן עליכם מפני חבר אחר שלא יעמוד בהתחייבויות. איחור בתשלום נושא ריבית פיגורים של 12% שנתי. הפרה יסודית שלא תוקנה אחרי הודעה בכתב ותקופת תיקון מקנה פיצוי מוסכם של 10% מאמדן היחידה — כמו בכל חוזה מקרקעין בישראל, לרבות רכישה מקבלן.</p>
+      <p>מחלוקות מוכרעות בבוררות, המנגנון המקובל בקבוצות רכישה ובבתים משותפים גדולים, כדי לאפשר הכרעה מהירה ומקצועית. הבורר נבחר בהסכמה, ובהיעדרה ממונה על ידי המוסד לבוררות עסקית, וחייב לנמק את החלטתו. בית המשפט שומר על סמכות פיקוח, כולל ביטול פסק בורר, וגם הבורר וגם בית המשפט מוסמכים לתת סעדים זמניים.</p>
+      <span class="ref">בהסכם: 5.4 · 23.1 · 24.1 · 25.1 · 25.3</span></div></details>
+
+    <h4>היחידה והסביבה</h4>
+    <details class="fold"><summary>שינוי שטח עד 4%</summary><div class="body">
+      <p>4% הוא תקרה, לא צפי — וגם בהסכמי מכר מול קבלן קיימת סטייה מותרת בשטח ללא פיצוי. השמאי שקובע אם שינוי הוא מהותי הוא שמאי חיצוני שאינו כפוף למארגן, וסטייה מהותית מובילה לעדכון החלק היחסי. השינוי חל באופן סימטרי: אם התכנון מגדיל שטח, לא נדרשת תוספת תשלום בגבולות אותו טווח.</p>
+      <span class="ref">בהסכם: 2.9</span></div></details>
+
+    <details class="fold"><summary>הדירות שלא יימכרו — והמוכרת כשותפה</summary><div class="body">
+      <p>מנגנון "הדירות הנותרות" הוא בטוחה לרוכשים: הוא מבטיח שהפרויקט יגיע ל-100% התארגנות ולא ייתקע בגלל יחידות שלא שווקו. המוכרת מתחייבת לספוג את היחידות שלא נמכרו ולשאת בעלות בנייתן.</p>
+      <p>הפטור שלה מרכיב הקרקע ומדמי הארגון אינו סובסידיה — היא בעלת הקרקע, ותשלום עבור הקרקע מצידה הוא תשלום לעצמה; והמארגן והמוכרת קשורים, ולכן גם דמי הארגון. בעלויות הבנייה, הניהול והיועצים היא נושאת בחלק יחסי מלא כמו כל חבר, ולכן האינטרס שלה בהוזלת הבנייה זהה לשלכם. היא אינה רשאית לכהן בנציגות.</p>
+      <span class="ref">בהסכם: 3.5.1–3.5.3 · 3.6</span></div></details>
+
+    <details class="fold"><summary>תחנת המעבר, ומטווח 24</summary><div class="body">
+      <p>פינוי תחנת המעבר לאשפה עד הרבעון הרביעי של 2027 הוא התחייבות של העירייה שבאה לידי ביטוי במסמכי המכרז. מטווח 24 פונה מנפלים על ידי הגורמים המוסמכים לפני שהועבר לעירייה.</p>
+      <p>ההסכם קובע שהקרקע נרכשת במצבה (AS IS) ושעיכוב בפינוי מצד העירייה אינו עילה לטענה כלפי המארגן.</p>
+      <span class="ref">בהסכם: 2.1 · 2.4 · 2.6 · 2.8</span></div></details>
+  </div>
+</section>
+
+<!-- ===== 5. מסמכים ===== -->
+<section id="docs" class="alt">
+  <div class="wrap">
+    <div class="read">
+      <div class="eyebrow-s">המסמכים</div>
+      <h2>להורדה ולעיון</h2>
+    </div>
+    <div class="docs mt4" id="docList"></div>
+    <div class="ai mt5">
+      <h3>רוצים לבדוק אותנו עם AI? בבקשה.</h3>
+      <p>העתיקו את חבילת המידע — המספרים של היחידה, התשובות והסעיפים — והדביקו ב-ChatGPT או ב-Claude יחד עם הסכם השיתוף ונספחיו. כל תשובה כאן מפנה לסעיף, כך שה-AI יכול לאמת אותה מול הנוסח במקום לנחש.</p>
+      <div style="margin-top:var(--s3)"><button class="btn" id="copyAI">העתקת חבילת המידע ל-AI</button><span class="copied" id="copiedMsg">הועתק</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<button id="chatFab" aria-label="שאלו את חדר המידע"><span aria-hidden="true">💬</span><span class="lbl"> שאלו את חדר המידע</span></button>
+<div id="chatPanel" dir="rtl" role="dialog" aria-label="עוזר חדר המידע">
+  <div class="chat-head"><div><div class="t">העוזר של חדר המידע</div><div class="s">עונה אך ורק מתוך חומרי חדר המידע</div></div><button class="chat-close" id="chatClose" aria-label="סגירת הצ׳אט">×</button></div>
+  <div class="chat-msgs" id="chatMsgs"></div><div class="chat-suggest" id="chatSuggest"></div>
+  <div class="chat-input"><label for="chatText" class="skip">השאלה שלכם</label><input id="chatText" type="text" placeholder="מה תרצו לדעת?" maxlength="400"><button id="chatSend">שליחה</button></div>
+  <div class="chat-legal" id="chatHint"></div>
 </div>
+
+<footer>
+  <div class="wrap">
+    <b>קבוצת דוידסון · Davidson Group</b> · מגדל ב.ס.ר 2, קומה 22, דרך בן גוריון 1, בני ברק · 03-9798889 · office@davidsonh.co.il
+    <div class="legal">חדר המידע נועד להסבר ולהתמצאות. הנוסח המחייב הוא הסכם השיתוף על נספחיו, ובכל מקרה של סתירה — הוראות ההסכם גוברות. לוחות הזמנים הם הערכה תכנונית הכפופה להליכי הרישוי; הסכומים מחושבים על בסיס דף המידע של היחידה, והתנאים המחייבים הם אלה שייקבעו בהסכמי השיתוף והליווי. אין באמור בחדר המידע כדי להוות מצג כלשהו.</div>
+  </div>
+</footer>
+
+<script>
+/* ═══ נבנה אוטומטית ע"י dataroom_public_build.js — אין לערוך כאן ═══
+   המקור: davidson-dashboard/dataroom/index.html. כל שינוי בתוכן נעשה שם
+   ואז מריצים מחדש את הסקריפט. */
+(function(){
+  var DR_HOOK = "https://hook.eu2.make.com/dhimk81lvcjn3a28o9g6pq4hvcbm23ee";
+  var __DR_DEFAULTS__ = {
+  updated: "אוגוסט 2026",
+  building: "בניין הבוטיק — 9 קומות",
+  floor: 4, unitNo: 17, rooms: 4, sqm: 110,
+  estimate: 3700000,
+  landComponent: 1840803,
+  buildComponent: 1859197,
+  track: 'B',            // מסלול המימון שנקבע ליחידה: 'A' ריבית שוטפת · 'B' גרייס מלא
+  graceTotal: 4058240,   // אמדן כולל הערכת ריבית מתחשיב המימון של היחידה (אופציונלי; בהיעדרו מחושב)
+  docs: {
+    agreement: { url: "", label: "הסכם השיתוף על נספחיו", desc: "המסמך המחייב המלא (PDF)" },
+    nispachA1: { url: "", label: "נספח א'1 — אמדן היחידה", desc: "פירוט האמדן ורכיב הקרקע של היחידה" },
+    shamai:    { url: "", label: "דו\"ח השמאי — נספח ז'", desc: "הבסיס לאמדן ולמחיר הקרקע" },
+    bakasha:   { url: "", label: "בקשת ההצטרפות החתומה שלכם", desc: "העותק החתום — אישי ליחידה" },
+    infosheet: { url: "", label: "דף המידע וריכוז התשלומים", desc: "לפי מסלול המימון (PDF)" },
+    present:   { url: "https://foreverparkhayam.com", label: "מצגת הפרויקט", desc: "הדמיות, תכנון וסביבת החיים" }
+  }
+};
+  var t = new URLSearchParams(location.search).get("t");
+
+  /* הדף מוסתר עד שהיחידה נטענת. בלי זה נראה לרגע שלד עם כותרות בלי מספרים,
+     ובטוקן שגוי הוא היה מהבהב לפני הודעת השגיאה (נצפה בבדיקה 10.09.2026). */
+  var veil = document.createElement("style");
+  veil.textContent = "body>*{visibility:hidden}";
+  document.head.appendChild(veil);
+  function reveal(){ if (veil.parentNode) veil.parentNode.removeChild(veil); }
+
+  function notfound(){
+    reveal();
+    document.body.innerHTML =
+      '<div style="max-width:520px;margin:16vh auto;padding:0 22px;text-align:center;'
+      + 'font-family:Heebo,system-ui,sans-serif;color:#2b2b28;">'
+      + '<div style="font-size:19px;font-weight:800;margin-bottom:10px;">הקישור אינו זמין</div>'
+      + '<div style="font-size:14px;line-height:1.9;color:#6a6a64;">חדר המידע נמסר בקישור אישי. '
+      + 'אם הקישור הגיע אליכם ואינו נפתח, פנו אלינו ונשלח קישור מעודכן.<br>'
+      + 'קבוצת דוידסון · 03-9798889 · office@davidsonh.co.il</div></div>';
+  }
+  if (!t) { notfound(); return; }
+  fetch(DR_HOOK + "?action=unit&t=" + encodeURIComponent(t))
+    .then(function(r){ return r.json(); })
+    .then(function(u){
+      /* unitNo=0 או תשובה שאינה JSON תקין = טוקן שלא קיים במרשם */
+      if (!u || !u.unitNo) { notfound(); return; }
+      window.__DR_UNIT__ = u;
+      main();
+      reveal();
+    })
+    .catch(function(){ notfound(); });
+
+  function main(){
+    /* main() רץ רק אחרי שה-fetch חזר, ובשלב הזה document.readyState כבר
+       "complete" — ולכן כל מאזין DOMContentLoaded שנרשם בגוף המקורי לא היה
+       נורה לעולם. זה השתיק בשקט את beacon הצפייה (נתפס בבדיקה 10.09.2026:
+       הדף רונדר נכון, אבל אף אירוע לא נרשם לטוקן). השים מריץ מאזין כזה מיד,
+       ומוסר בסוף הגוף כדי לא להשפיע על שאר הדף. */
+    var _add = window.addEventListener;
+    window.addEventListener = function(type, fn, opts){
+      if (type === "DOMContentLoaded" && document.readyState !== "loading") {
+        try { fn(); } catch(e){}
+        return;
+      }
+      return _add.call(window, type, fn, opts);
+    };
+
+const UNIT = Object.assign({}, __DR_DEFAULTS__, window.__DR_UNIT__);
+const VAT = 0.18;
+const ils = n => "‏" + Math.round(n).toLocaleString("he-IL") + " ₪";
+const pct1 = x => (x*100).toLocaleString("he-IL", { maximumFractionDigits: 1 }) + "%";
+
+const finState = {
+  V: UNIT.estimate,
+  buildCost: UNIT.buildComponent,
+  landDate: new Date(2027, 0, 31),
+  m2c: 5, cm: 36,
+  prime: 4.5, margin: 1.0,
+  eqA: 20, eqB: 25,
+  track: 'B'
+};
+
+function finLandPct(){ return (finState.V - finState.buildCost) / finState.V * 100; }
+function finAddMonths(d, m){
+  const r = new Date(d.getTime()); const day = r.getDate();
+  r.setDate(1); r.setMonth(r.getMonth() + m);
+  const last = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+  r.setDate(Math.min(day, last)); return r;
+}
+function finMMYY(d){ return String(d.getMonth()+1).padStart(2,"0") + "/" + d.getFullYear(); }
+
+function finComputeTrack(grace, eqShekels, extraShekels){
+  const V = finState.V;
+  const L = V * finLandPct() / 100;
+  const C = V - L;
+  const eq = Math.min(eqShekels, V);
+  const landLoan = Math.max(0, L - eq - extraShekels);
+  let left = Math.max(0, eq + extraShekels - L);
+  const r = (finState.prime + finState.margin) / 100, q = r / 4;
+  const totalM = finState.m2c + finState.cm;
+  const quarters = Math.ceil(totalM / 3);
+  const drawPM = C / finState.cm;
+
+  const rows = []; let cumNet = 0, balance = landLoan, totalInt = 0;
+  for (let k = 1; k <= quarters; k++){
+    const m1 = (k-1)*3 + 1, m2 = Math.min(k*3, totalM);
+    const cmn = Math.max(0, m2 - Math.max(m1, finState.m2c + 1) + 1);
+    let draws = cmn * drawPM;
+    const off = Math.min(left, draws); draws -= off; left -= off;
+    cumNet += draws;
+    const interest = grace ? (balance + draws) * q : (landLoan + cumNet) * q;
+    totalInt += interest;
+    balance = balance + draws + interest;
+    rows.push({ k, date: finAddMonths(finState.landDate, (k-1)*3), draws, interest,
+                balance: grace ? balance : landLoan + cumNet, cumInt: totalInt });
+  }
+  const principal = landLoan + cumNet;
+  let firstPay = 0;
+  for (const row of rows){ if (row.interest > 0.5){ firstPay = row.interest; break; } }
+  const peak = rows.reduce((m, r2) => Math.max(m, r2.interest), 0);
+  return { grace, V, L, C, eq, landLoan, rows, totalInt,
+           debtAtDelivery: grace ? balance : principal, principal,
+           firstPay, peak, totalM, delivery: finAddMonths(finState.landDate, totalM) };
+}
+
+function finComputeGraceFixed(eqPct, extra){
+  let eq = finState.V * eqPct / 100, t;
+  for (let i = 0; i < 25; i++){
+    t = finComputeTrack(true, eq, extra);
+    const ne = (finState.V + t.totalInt) * eqPct / 100;
+    if (Math.abs(ne - eq) < 1){ eq = ne; break; }
+    eq = ne;
+  }
+  return finComputeTrack(true, eq, extra);
+}
+
+function finCompute(track){
+  return track === 'A'
+    ? finComputeTrack(false, finState.V * finState.eqA / 100, 0)
+    : finComputeGraceFixed(finState.eqB, 0);
+}
+
+/* ---------- המספרים של היחידה — לפי מסלול המימון שנקבע ליחידה ---------- */
+const TRACK = UNIT.track === 'B' ? 'B' : 'A';   // A = ריבית שוטפת · B = גרייס מלא
+const TRACK_NAME = TRACK === 'A' ? 'ריבית שוטפת' : 'גרייס מלא';
+
+(function hero(){
+  const c = document.getElementById("unitChip");
+  const cells = [["בניין", UNIT.building], ["קומה", UNIT.floor], ["דירה", UNIT.unitNo], ["חדרים", UNIT.rooms], ["שטח", UNIT.sqm + ' מ"ר']];
+  c.innerHTML = cells.map(([k,v]) => `<div class="chip"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")
+    + `<div class="chip hi"><div class="k">מסלול המימון</div><div class="v">${TRACK_NAME}</div></div>`;
+})();
+
+function renderNumbers(){
+  const e = UNIT.estimate, dep = 35000, isA = TRACK === 'A';
+  // בסיס האחוזים: אמדן (שוטף) או אמדן כולל הערכת ריבית (גרייס) — מתחשיב המימון של היחידה;
+  // בהיעדר ערך מוזן, המנוע המאומת מחשב אותו (נקודת שבת: הון 25% מהסך הכולל).
+  const base = isA ? e : (UNIT.graceTotal || Math.round(e + finCompute('B').totalInt));
+  const first = base * 0.10 - dep, second = isA ? base * 0.10 : base * 0.15, total = isA ? base * 0.20 : base * 0.25;
+
+  const feeTotal = e * 0.011 * (1 + VAT);
+
+  document.getElementById("stEst").textContent = ils(e);
+  document.getElementById("stSplit").textContent = "קרקע " + ils(UNIT.landComponent) + " · הקמה " + ils(UNIT.buildComponent) + " · לפני הצמדה למדד תשומות הבנייה · כולל מע\"מ, אגרות והיטלים, יועצי התכנון, הפיקוח וניהול הפרויקט, ודמי ארגון קבועים";
+
+  const B1 = 1978745, B2 = 2347040, B3 = 6055070;
+  let single = 0;
+  if (e > B1) single += (Math.min(e, B2) - B1) * 0.035;
+  if (e > B2) single += (Math.min(e, B3) - B2) * 0.05;
+  if (e > B3) single += (e - B3) * 0.08;
+  const invest = e <= B3 ? e * 0.08 : B3 * 0.08 + (e - B3) * 0.10;
+  document.getElementById("stTaxK").textContent = "מס רכישה · דירה יחידה";
+  document.getElementById("stTax").textContent = ils(single);
+  document.getElementById("stTax2").textContent = "על מלוא האמדן, לפי מדרגות 2026, בתוך 60 יום ממועד גיבוש הקבוצה · אם זו אינה דירתכם היחידה: " + pct1(invest / e) + " = " + ils(invest);
+
+  document.getElementById("stFee").textContent = ils(feeTotal);
+  document.getElementById("stFeeS").textContent = "1.1% + מע\"מ, בארבעה תשלומים · לפקודת אפשטיין רוזנבלום מעוז, היועצים המשפטיים של הקבוצה";
+
+  if (isA) {
+    document.getElementById("stIntCard").hidden = true;
+  } else {
+    document.getElementById("stInt").textContent = ils(base - e);
+    document.getElementById("stIntS").textContent = "מתחילה ממועד גיבוש הקבוצה בפועל; גיבוש מאוחר יותר מקטין אותה. הנחות התחשיב: ריבית 5.5% (פריים + 1%), גיבוש בפברואר 2027 ואכלוס ביולי 2030. התנאים המחייבים בנספח יד'";
+  }
+
+  document.getElementById("stGrand").textContent = ils(e + (base - e) + single + feeTotal);
+  document.getElementById("stGrandS").textContent =
+    "אמדן " + ils(e) + " + מס רכישה " + ils(single) + " + שכ\"ט " + ils(feeTotal) + (base > e ? " + הערכת ריבית " + ils(base - e) : "") +
+    ".";
+
+  document.getElementById("openPct").textContent = pct1(UNIT.buildComponent / e);
+  document.getElementById("eqNote").textContent =
+    (isA ? "20% מהאמדן" : "25% מבסיס החישוב " + ils(base) + " (אמדן + הערכת ריבית)") +
+    " — מופקד בנאמנות אצל אפשטיין רוזנבלום מעוז (לפקודת עו\"ד ערן מזרחי).";
+
+  const pay = [
+    [ils(dep), "דמי רצינות · במעמד ההצטרפות · מוחזרים במלואם אם לא ייחתם הסכם השיתוף"],
+    [ils(first), "השלמה ל־10% · במעמד חתימת הסכם השיתוף"],
+    [ils(second), (isA ? "10% נוספים (השלמה ל־20%)" : "15% נוספים (השלמה ל־25%)") + " · עד 31.01.2027"]
+  ];
+  document.getElementById("payList").innerHTML =
+    pay.map(r => `<li><b>${r[0]}</b><span>${r[1]}</span></li>`).join("") +
+    `<li class="sum"><b>${ils(total)}</b><span>סה"כ הון עצמי</span></li>`;
+  document.getElementById("openPct").textContent = pct1(UNIT.buildComponent / e);
+  document.getElementById("restNote").textContent =
+    "היתרה: השלמת עלות הקרקע (נספח א'1) לא לפני 31.01.2027, ועלויות הבנייה לפי קצב הביצוע — דרך הגורם המממן או בהון עצמי.";
+
+  const part = p => e * p * (1 + VAT);
+  const fee = [["0.35% + מע\"מ", "עד 31.01.2027", ils(part(0.0035))], ["0.35% + מע\"מ", "בקבלת היתר", ils(part(0.0035))],
+               ["0.30% + מע\"מ", "בתחילת הבנייה", ils(part(0.0030))], ["0.10% + מע\"מ", "באכלוס", ils(part(0.0010))]];
+  document.getElementById("feeSummary").textContent = "פירוט ארבעת תשלומי שכר הטרחה";
+  document.getElementById("feeTable").innerHTML =
+    fee.map(r => `<tr><td><b>${r[0]}</b><span class="sub">${r[1]}</span></td><td class="num">${r[2]}</td></tr>`).join("") +
+    `<tr class="sum-row"><td>סה"כ</td><td class="num">${ils(e * 0.011 * (1 + VAT))}</td></tr>`;
+}
+renderNumbers();
+document.getElementById("trackPara").innerHTML = TRACK === 'A'
+  ? 'המסלול שנקבע ליחידה שלכם הוא <b>ריבית שוטפת</b>: הריבית משולמת מדי תקופה, וההון העצמי הוא 20% מהאמדן. הריבית מתחילה רק ממועד גיבוש הקבוצה. עיקרי תנאי ההלוואה — סכום, ריבית, תקופה ובטוחות — בנספח יד\'.'
+  : 'המסלול שנקבע ליחידה שלכם הוא <b>גרייס מלא</b>: הריבית אינה משולמת שוטף אלא נצברת ומצטרפת לעלות, ולכן ההון העצמי מחושב על האמדן בתוספת הערכת הריבית. הריבית מתחילה רק ממועד גיבוש הקבוצה. עיקרי תנאי ההלוואה — סכום, ריבית, תקופה ובטוחות — בנספח יד\'.'; 
+
+/* ---------- docs ---------- */
+(function docs(){
+  const order = ["agreement", "nispachA1", "shamai", "bakasha", "infosheet", "present"];
+  const icons = { agreement: "📜", nispachA1: "🧾", shamai: "📐", bakasha: "✍️", infosheet: "📄", present: "🏙️" };
+  document.getElementById("docList").innerHTML = order.map(k => {
+    const d = UNIT.docs[k];
+    return `<a class="${d.url ? "doc" : "doc pending"}" href="${d.url || "#"}" ${d.url ? 'target="_blank" rel="noopener"' : ""}>
+      <div class="ic" aria-hidden="true">${icons[k]}</div><div><div class="t">${d.label}</div><div class="d">${d.desc}</div></div></a>`;
+  }).join("");
+})();
+
+/* ---------- AI package: נגזרת מהדף עצמו, כדי שלא יהיו שני נוסחים ---------- */
+function buildDigest(){
+  const closed = [...document.querySelectorAll("details:not([open])")]; closed.forEach(d => d.open = true);
+  try { return buildDigestInner(); } finally { closed.forEach(d => d.open = false); }
+}
+function buildDigestInner(){
+  const txt = el => (el ? el.innerText : "").replace(/\s+\n/g, "\n").replace(/[ \t]+/g, " ").trim();
+  const out = [];
+  out.push("# פרויקט FOREVER — חבילת מידע לרוכש (להזנה ל-AI)");
+  out.push("מקור: חדר המידע הרשמי לרוכשים, קבוצת דוידסון. עדכון: " + UNIT.updated + ". הנוסח המחייב הוא הסכם השיתוף על נספחיו.");
+  out.push("\n## היחידה ולוח התשלומים (מסלול " + TRACK_NAME + ")");
+  out.push(txt(document.getElementById("unitChip")));
+  out.push(txt(document.querySelector("#numbers .stats")));
+  out.push(txt(document.querySelector("#numbers .grand")));
+  out.push("\n### ההון העצמי — כמה משלמים, ומתי");
+  out.push(txt(document.getElementById("eqNote")));
+  out.push(txt(document.getElementById("payList")));
+  out.push(txt(document.getElementById("restNote")));
+  out.push("\n## בקצרה");
+  out.push(txt(document.querySelector("#start")));
+  out.push("\n## סטטוס תכנוני (" + UNIT.updated + ") — השורות העתידיות הן צפי, לא התחייבות");
+  out.push([...document.querySelectorAll("#status table tr")].map(tr =>
+    [...tr.cells].map(td => txt(td)).join(" — ")).join("\n"));
+  out.push("\n## מה ההסכם אומר");
+  document.querySelectorAll("#faq details.fold").forEach(d => {
+    out.push("### " + txt(d.querySelector("summary")));
+    out.push(txt(d.querySelector(".body")));
+  });
+  out.push("\n## הסתייגות");
+  out.push(txt(document.querySelector("footer .legal")));
+  return out.join("\n");
+}
+document.getElementById("copyAI").addEventListener("click", async () => {
+  const digest = buildDigest();
+  try { await navigator.clipboard.writeText(digest); }
+  catch(e){ const ta = document.createElement("textarea"); ta.value = digest; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+  const m = document.getElementById("copiedMsg"); m.classList.add("show"); setTimeout(() => m.classList.remove("show"), 3000);
+  sendEvent("copy_ai");
+});
+
+/* ---------- analytics beacons (Make) ---------- */
+const DATAROOM_HOOK = "https://hook.eu2.make.com/fkf47qjdz3y5f3hd2cr7pozsuwaleuom";
+const CHAT_ENABLED = false;   // הצ׳אט כבוי עד שייבדק; הקוד ב-v1 בגיבוי
+function roomToken(){ return new URLSearchParams(location.search).get("t") || "_general"; }
+function sendEvent(type, meta){
+  if (!DATAROOM_HOOK) return;
+  const b = new URLSearchParams(); b.append("type", "event"); b.append("t", roomToken()); b.append("evtype", type); b.append("meta", meta ? String(meta).slice(0, 400) : "");
+  try { if (navigator.sendBeacon) navigator.sendBeacon(DATAROOM_HOOK, new Blob([b.toString()], { type: "application/x-www-form-urlencoded" }));
+        else fetch(DATAROOM_HOOK, { method: "POST", body: b, keepalive: true }); } catch(e){}
+}
+window.addEventListener("DOMContentLoaded", () => sendEvent("view", document.referrer || ""));
+document.getElementById("docList").addEventListener("click", e => { const a = e.target.closest("a.doc"); if (a && !a.classList.contains("pending")) sendEvent("doc_open", a.querySelector(".t").textContent); });
+document.querySelectorAll("#faq details.fold").forEach(d => d.addEventListener("toggle", () => { if (d.open) sendEvent("faq_open", d.querySelector("summary").textContent); }));
+if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+
+
+/* ---- משך שהייה (dwell), בשניות ----
+   נמדד בחותמות זמן ולא בספירת פעימות: setInterval נחנק בלשונית רקע ומאבד
+   שברי זמן, וחותמת זמן חסינה לזה. נספר רק זמן שבו הלשונית גלויה — "כמה זמן
+   הלקוח באמת קרא", לא כמה זמן הטאב היה פתוח ברקע.
+   הערך נשלח מצטבר, ולכן קורא הדוח לוקח את המקסימום לכל טוקן ולא סכום —
+   שליחה חוזרת מעדכנת ולא מנפחת.
+   ⚠ בלשונית שמדווחת hidden לכל אורך החיים (כלי אוטומציה, תצוגה מוטמעת)
+      לא ייווצר אירוע כלל — וזו התנהגות נכונה, לא תקלה. */
+  (function(){
+    var vis = document.visibilityState !== "hidden", mark = Date.now(), acc = 0, sent = -1;
+    function accum(){ var now = Date.now(); if (vis) acc += now - mark; mark = now; }
+    function flush(){
+      accum();
+      var s = Math.round(acc / 1000);
+      if (s > 0 && s !== sent) { sent = s; sendEvent("dwell", String(s)); }
+    }
+    document.addEventListener("visibilitychange", function(){
+      accum();
+      vis = document.visibilityState !== "hidden";
+      if (!vis) flush();
+    });
+    window.addEventListener("pagehide", flush);
+    /* רשת ביטחון: בספארי במובייל pagehide נבלע לעיתים כשסוגרים את האפליקציה.
+       דיווח מצטבר כל דקה מבטיח שלא נאבד את הביקור כולו. */
+    setInterval(flush, 60000);
+  })();
+
+  window.addEventListener = _add;
+  }
+})();
+</script>
 </body>
 </html>
