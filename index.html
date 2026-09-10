@@ -612,7 +612,7 @@ function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
          הוא עוגן שהקוד תופס. שאר המסמכים נשארים כפי שהוגדרו בדף המקור. */
       /* המסמכים הקבועים: קישור צפייה בדרייב. מזהה ריק ⇒ הכרטיס נשאר כפי
          שהוגדר בדף המקור, כלומר pending — ולא קישור שבור. */
-      var DRIVE = {"agreement":"","shamai":"","infosheet":""};
+      var DRIVE = {"agreement":"","shamai":""};
       function fromDrive(key){
         var cur = __DR_DEFAULTS__.docs[key] || {};
         if (!DRIVE[key]) return cur;
@@ -627,7 +627,9 @@ function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
           desc: "PDF · לוח ארבעת התשלומים לפי מסלול המימון שנקבע ליחידה" },
         agreement: fromDrive("agreement"),
         shamai:    fromDrive("shamai"),
-        infosheet: fromDrive("infosheet")
+        /* ⛔ אין למחוק את המפתח: הרינדור בדף רץ על מערך order קבוע, ומפתח חסר
+           היה זורק ומפיל את כל מקטע המסמכים. מסמנים, ומסירים אחרי הרינדור. */
+        infosheet: { url: "#dr-hide", label: "", desc: "" }
       });
       window.__DR_UNIT__ = u;
       main();
@@ -992,6 +994,10 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
         });
       });
     }
+
+    /* הסרת הכרטיס שסומן להסתרה (דף המידע — הנתונים כבר בדף) */
+    var hidden = document.querySelector('#docList a[href="#dr-hide"]');
+    if (hidden) hidden.parentNode.removeChild(hidden);
 
     /* הכרטיסים מרונדרים ע"י הדף עצמו כ-<a href>; תופסים אותם לפי העוגן. */
     [["#dr-bakasha", makeBakasha, "בקשת הצטרפות"],
