@@ -613,10 +613,10 @@ function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
       u.docs = Object.assign({}, __DR_DEFAULTS__.docs, {
         bakasha: { url: "#dr-bakasha",
           label: "בקשת ההצטרפות — הטופס של היחידה שלכם",
-          desc: "ממולא בנתוני היחידה. הפרטים האישיים והחתימה נעשים מול הנציג" },
+          desc: "PDF · ממולא בנתוני היחידה. הפרטים האישיים והחתימה נעשים מול הנציג" },
         nispachA1: { url: "#dr-nispach",
           label: "נספח א׳1 — תשלומי הקרקע של היחידה",
-          desc: "לוח ארבעת התשלומים לפי מסלול המימון שנקבע ליחידה" }
+          desc: "PDF · לוח ארבעת התשלומים לפי מסלול המימון שנקבע ליחידה" }
       });
       window.__DR_UNIT__ = u;
       main();
@@ -903,8 +903,33 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
     function money(n){ return n ? Math.round(n).toLocaleString("en-US")+" ₪" : ""; }
     function localPhone(p){ p=String(p||""); return p.indexOf("972")===0 ? "0"+p.slice(3) : p; }
     function safe(s){ return String(s==null?"":s).replace(/[\\\/:*?"<>|]/g,"-"); }
+
+    function b64(bytes){
+      var s="", CH=0x8000;
+      for (var i=0;i<bytes.length;i+=CH) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH));
+      return btoa(s);
+    }
+    /* 📐 הלקוח מקבל PDF בלבד (הכרעת שלומי). אין המרת DOCX→PDF אמינה בדפדפן,
+       ובעברית בוודאי לא — ולכן ה-DOCX נבנה כאן, מומר ב-Microsoft Graph דרך Make
+       (מסלול action=pdf), וחוזר כבתים. אותו מנגנון המרה שתרחיש החתימה כבר משתמש בו. */
+    function toPdf(bytes, kind){
+      var body=new URLSearchParams();
+      body.append("action","pdf");
+      body.append("t", new URLSearchParams(location.search).get("t")||"");
+      body.append("kind", kind);
+      body.append("docx", b64(bytes));
+      return fetch(DR_HOOK,{method:"POST",body:body})
+        .then(function(r){ return r.arrayBuffer(); })
+        .then(function(ab){
+          var u=new Uint8Array(ab);
+          /* ההמרה נכשלת בשקט אם הטוקן אינו מוכר — Make מחזיר "Accepted" ולא PDF */
+          if (u.length<5 || String.fromCharCode(u[0],u[1],u[2],u[3])!=="%PDF")
+            throw new Error("ההמרה לא החזירה PDF");
+          return u;
+        });
+    }
     function save(bytes,name){
-      var url=URL.createObjectURL(new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"}));
+      var url=URL.createObjectURL(new Blob([bytes],{type:"application/pdf"}));
       var a=document.createElement("a"); a.href=url; a.download=name;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(url); },10000);
@@ -913,7 +938,7 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
 
     function makeBakasha(){
       return tpl("bakasha").then(function(t){
-        save(DocxFill.fill(t, {
+        return toPdf(DocxFill.fill(t, {
           date:"", bldg:bn, floor:UNIT.floor, unit:UNIT.unitNo,
           model:UNIT.model||"", dir:UNIT.dir||"", rooms:UNIT.rooms,
           area:UNIT.sqm?UNIT.sqm+' מ"ר':"", balcony:UNIT.balcony?UNIT.balcony+' מ"ר':"",
@@ -923,7 +948,9 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
           b2name:"", b2id:"", address:"", phone:localPhone(UNIT.phone), email:"",
           b2address:"", b2phone:"", b2email:"",
           agent:UNIT.agent||"", agentPhone:UNIT.agentPhone||""
-        }), safe("בקשת הצטרפות - "+bn+" יחידה "+UNIT.unitNo+" - "+(UNIT.clientName||""))+".docx");
+        }), "bakasha").then(function(pdf){
+          save(pdf, safe("בקשת הצטרפות - "+bn+" יחידה "+UNIT.unitNo+" - "+(UNIT.clientName||""))+".pdf");
+        });
       });
     }
 
@@ -943,13 +970,15 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
       var m = function(n){ return naMoney(n)+" "+NA_RLM; };
       /* ת.ז. אינה תמיד ידועה בשליחה — קו לחתימה ידנית במקומה, כמו התאריך. */
       return tpl(isGrace?"grace":"std").then(function(t){
-        save(DocxFill.fillTags(t, {
+        return toPdf(DocxFill.fillTags(t, {
           "«F1»":bn, "«F2»":UNIT.floor, "«F3»":UNIT.unitNo, "«F4»":UNIT.rooms,
           "«F14»":m(land), "«F19»":naWords(land),
           "«M_01»":m(t2), "«M_011»":m(t3), "«F18»":m(t4),
           "«S1»":UNIT.clientName||"", "«ID1»":UNIT.b1id||"________________",
           "«S2»":"", "«ID2»":"", "«DATE»":"________________"
-        }), safe("נספח א1 - "+bn+" יחידה "+UNIT.unitNo+" - "+(UNIT.clientName||"")+(isGrace?" (גרייס)":""))+".docx");
+        }), "nispach").then(function(pdf){
+          save(pdf, safe("נספח א1 - "+bn+" יחידה "+UNIT.unitNo+" - "+(UNIT.clientName||"")+(isGrace?" (גרייס)":""))+".pdf");
+        });
       });
     }
 
@@ -961,7 +990,8 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
       a.addEventListener("click", function(e){
         e.preventDefault();
         var d = a.querySelector(".d"), was = d ? d.textContent : "";
-        if (d) d.textContent = "מכין את המסמך…";
+        /* ההמרה ב-Graph לוקחת כ-5 שניות — בלי הודעה זה נראה כאילו שום דבר לא קרה */
+        if (d) d.textContent = "מכין את המסמך… (כמה שניות)";
         row[1]()
           .then(function(){ if (d) d.textContent = was; sendEvent("doc_make", row[2]); })
           .catch(function(err){ if (d) d.textContent = "לא הצלחנו להכין את המסמך — נסו שוב"; });
