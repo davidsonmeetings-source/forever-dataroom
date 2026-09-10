@@ -610,13 +610,24 @@ function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
       if (!u || !u.unitNo) { notfound(); return; }
       /* שני המסמכים פר-היחידה מופקים בדפדפן ולא מתארחים כקובץ, ולכן ה-url שלהם
          הוא עוגן שהקוד תופס. שאר המסמכים נשארים כפי שהוגדרו בדף המקור. */
+      /* המסמכים הקבועים: קישור צפייה בדרייב. מזהה ריק ⇒ הכרטיס נשאר כפי
+         שהוגדר בדף המקור, כלומר pending — ולא קישור שבור. */
+      var DRIVE = {"agreement":"","shamai":"","infosheet":""};
+      function fromDrive(key){
+        var cur = __DR_DEFAULTS__.docs[key] || {};
+        if (!DRIVE[key]) return cur;
+        return Object.assign({}, cur, { url: "https://drive.google.com/file/d/" + DRIVE[key] + "/view" });
+      }
       u.docs = Object.assign({}, __DR_DEFAULTS__.docs, {
         bakasha: { url: "#dr-bakasha",
           label: "בקשת ההצטרפות — הטופס של היחידה שלכם",
           desc: "PDF · ממולא בנתוני היחידה. הפרטים האישיים והחתימה נעשים מול הנציג" },
         nispachA1: { url: "#dr-nispach",
           label: "נספח א׳1 — תשלומי הקרקע של היחידה",
-          desc: "PDF · לוח ארבעת התשלומים לפי מסלול המימון שנקבע ליחידה" }
+          desc: "PDF · לוח ארבעת התשלומים לפי מסלול המימון שנקבע ליחידה" },
+        agreement: fromDrive("agreement"),
+        shamai:    fromDrive("shamai"),
+        infosheet: fromDrive("infosheet")
       });
       window.__DR_UNIT__ = u;
       main();
