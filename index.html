@@ -1107,6 +1107,42 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
     var hidden = document.querySelectorAll('#docList a[href="#dr-hide"]');
     Array.prototype.forEach.call(hidden, function(el){ el.parentNode.removeChild(el); });
 
+    /* ═══ בקשת ההצטרפות החתומה ═══
+       הכרטיס נוסף **רק** אם Make אישר שיש חתימה תואמת ליחידה ולטלפון שקיבל
+       את הקישור. מסלול action=signed מצליב את DS 179615 מול DS 178072 על
+       ארבעה תנאים (טלפון, יחידה, בניין, status=signed) ודורש spFileId קיים.
+       🚨 למה ההצלבה קיימת: מחזיק הקישור והחותם הם ישויות נפרדות. נמדד
+          16.09.2026 שבבוטיק 17 הקישור אצל אדם אחד והחתימה של אחר — בלי
+          ההצלבה הכרטיס היה מגיש ת.ז., כתובת וחתימה של רוכש זר.
+       🔒 fail-closed בשלוש שכבות: אין התאמה ⇒ Make מחזיר "Accepted" (טקסט,
+          לא JSON) ⇒ r.json() זורק ⇒ catch ⇒ אין כרטיס. כל תקלה ברשת מתנהגת
+          זהה. ⚠ אין להחליף את ה-catch בהצגת כרטיס-ברירת-מחדל. */
+    (function(){
+      var t = new URLSearchParams(location.search).get("t");
+      if (!t) return;
+      fetch(DR_HOOK + "?action=signed&t=" + encodeURIComponent(t), { signal: AbortSignal.timeout(9000) })
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          if (!j || !j.ok) return;
+          var list = document.getElementById("docList");
+          if (!list) return;
+          /* 📐 התווית גנרית ואינה מציגה את שם הקובץ — הוא מכיל את שם החותם. */
+          var when = "";
+          try { if (j.signedAt) when = new Date(j.signedAt).toLocaleDateString("he-IL",
+                  { timeZone: "Asia/Jerusalem", day: "2-digit", month: "2-digit", year: "numeric" }); } catch(e){}
+          var a = document.createElement("a");
+          a.className = "doc";
+          a.href = DR_HOOK + "?action=signedfile&t=" + encodeURIComponent(t);
+          a.target = "_blank"; a.rel = "noopener";
+          a.innerHTML = '<div class="ic" aria-hidden="true">✍️</div><div>'
+            + '<div class="t">בקשת ההצטרפות החתומה שלכם</div>'
+            + '<div class="d">PDF' + (when ? " · נחתמה ב-" + when : "") + '</div></div>';
+          a.addEventListener("click", function(){ sendEvent("doc_open", "בקשת הצטרפות חתומה"); });
+          list.appendChild(a);
+        })
+        .catch(function(){ /* אין חתימה תואמת, או תקלה — הכרטיס פשוט לא מוצג */ });
+    })();
+
     /* הכרטיסים מרונדרים ע"י הדף עצמו כ-<a href>; תופסים אותם לפי העוגן.
        💤 רדום מ-16.09.2026: שני הכרטיסים סומנו #dr-hide בהכרעת שלומי, ולכן
           העוגנים אינם קיימים ובדיקת ה-null למטה יוצאת מיד. מנגנון ההפקה כולו
