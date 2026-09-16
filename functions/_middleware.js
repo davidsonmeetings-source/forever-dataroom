@@ -29,8 +29,16 @@ const HOOK = 'https://hook.eu2.make.com/dhimk81lvcjn3a28o9g6pq4hvcbm23ee';
    קורא cloaking, וממילא אין צורך: ה-noscript גלוי לכולם באותה מידה. */
 const BOT_RE = /bot|crawler|spider|GPTBot|ChatGPT|Claude|Anthropic|Perplexity|Bytespider|CCBot|Google-Extended|facebookexternalhit|WhatsApp|Slackbot|Twitterbot/i;
 
+/* 📐 שתי רמות בריחה, במכוון.
+   ⚠ esc ל-**תוכן טקסט** ואינו נוגע בגרשיים: הקורא היחיד של הבלוק הזה הוא מי
+     שמנתח HTML גולמי, ו-`&quot;` הפך אצלו "110 מ"ר" ל-"110 מ&quot;ר" (נתפס
+     16.09.2026 באימות מול יחידה אמיתית). הדפדפן היה מפענח — קורא גולמי לא
+     בהכרח, וזו כל מטרת הבלוק.
+   🔒 escAttr לערך שנכנס לתוך מרכאות של תגית. כרגע אין כזה, והוא קיים כדי
+     שהוספה עתידית לא תשתמש ב-esc במקום הלא נכון. */
 const esc = s => String(s == null ? '' : s)
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const escAttr = s => esc(s).replace(/"/g, '&quot;');
 
 /* ₪ בפורמט עברי. מחרוזת ריקה לערך שאינו מספר חיובי — שדה חסר במרשם לא
    יודפס כ-"0 ₪", שהיה נקרא כמחיר אמיתי. */
