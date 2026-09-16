@@ -729,23 +729,26 @@ function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
          הוא עוגן שהקוד תופס. שאר המסמכים נשארים כפי שהוגדרו בדף המקור. */
       /* המסמכים הקבועים: קישור צפייה בדרייב. מזהה ריק ⇒ הכרטיס נשאר כפי
          שהוגדר בדף המקור, כלומר pending — ולא קישור שבור. */
-      var DRIVE = {"agreement":"","shamai":""};
+      var DRIVE = {"agreement":""};
       function fromDrive(key){
         var cur = __DR_DEFAULTS__.docs[key] || {};
         if (!DRIVE[key]) return cur;
         return Object.assign({}, cur, { url: "https://drive.google.com/file/d/" + DRIVE[key] + "/view" });
       }
       u.docs = Object.assign({}, __DR_DEFAULTS__.docs, {
-        bakasha: { url: "#dr-bakasha",
-          label: "בקשת ההצטרפות — הטופס של היחידה שלכם",
-          desc: "PDF · ממולא בנתוני היחידה. הפרטים האישיים והחתימה נעשים מול הנציג" },
-        nispachA1: { url: "#dr-nispach",
-          label: "נספח א׳1 — תשלומי הקרקע של היחידה",
-          desc: "PDF · לוח ארבעת התשלומים לפי מסלול המימון שנקבע ליחידה" },
         agreement: fromDrive("agreement"),
-        shamai:    fromDrive("shamai"),
-        /* ⛔ אין למחוק את המפתח: הרינדור בדף רץ על מערך order קבוע, ומפתח חסר
-           היה זורק ומפיל את כל מקטע המסמכים. מסמנים, ומסירים אחרי הרינדור. */
+        /* ⛔ אין למחוק מפתח: הרינדור בדף רץ על מערך order קבוע, ומפתח חסר
+           היה זורק ומפיל את כל מקטע המסמכים. מסמנים, ומסירים אחרי הרינדור.
+           · infosheet — הנתונים כבר מרונדרים בדף (הכרעת שלומי 11.09.2026)
+           · shamai + present — הכרעת שלומי 16.09.2026
+           · bakasha + nispachA1 — הכרעת שלומי 16.09.2026. ⏳ במקומם יבוא
+             כפתור לבקשת ההצטרפות **החתומה**.
+           ⚠ נשאר מוצג כרטיס אחד בלבד: agreement, והוא pending כל עוד
+             DRIVE_DOCS.agreement ריק. */
+        bakasha:   { url: "#dr-hide", label: "", desc: "" },
+        nispachA1: { url: "#dr-hide", label: "", desc: "" },
+        shamai:    { url: "#dr-hide", label: "", desc: "" },
+        present:   { url: "#dr-hide", label: "", desc: "" },
         infosheet: { url: "#dr-hide", label: "", desc: "" }
       });
       window.__DR_UNIT__ = u;
@@ -1097,11 +1100,21 @@ if (!CHAT_ENABLED) ["chatFab", "chatPanel"].forEach(id => { const el = document.
       });
     }
 
-    /* הסרת הכרטיס שסומן להסתרה (דף המידע — הנתונים כבר בדף) */
-    var hidden = document.querySelector('#docList a[href="#dr-hide"]');
-    if (hidden) hidden.parentNode.removeChild(hidden);
+    /* הסרת כל הכרטיסים שסומנו להסתרה.
+       🚨 querySelectorAll ולא querySelector: מ-16.09.2026 מסומנים **שלושה**
+          (infosheet, shamai, present), ובחירה יחידה הייתה מסירה את הראשון
+          ומשאירה שניים ככרטיסים ריקים — תווית ריקה עם קישור מת. */
+    var hidden = document.querySelectorAll('#docList a[href="#dr-hide"]');
+    Array.prototype.forEach.call(hidden, function(el){ el.parentNode.removeChild(el); });
 
-    /* הכרטיסים מרונדרים ע"י הדף עצמו כ-<a href>; תופסים אותם לפי העוגן. */
+    /* הכרטיסים מרונדרים ע"י הדף עצמו כ-<a href>; תופסים אותם לפי העוגן.
+       💤 רדום מ-16.09.2026: שני הכרטיסים סומנו #dr-hide בהכרעת שלומי, ולכן
+          העוגנים אינם קיימים ובדיקת ה-null למטה יוצאת מיד. מנגנון ההפקה כולו
+          (DocxFill, שלוש התבניות, מסלול 6 בתרחיש 9790237) נשאר במקומו ולא
+          הוסר — הוא מנוע עובד שאין עלות בהחזקתו, והחזרתו היא שינוי שורה אחת
+          ב-u.docs. התבניות ממשיכות להיפרס, ובדיקת שלוש התבניות ב-
+          dataroom_publish.js עדיין תקפה.
+       ⚠ הבלוק הזה יושב בתוך template literal — אין לכתוב בו תו גרש-הפוך. */
     [["#dr-bakasha", makeBakasha, "בקשת הצטרפות"],
      ["#dr-nispach", makeNispach, "נספח א׳1"]].forEach(function(row){
       var a = document.querySelector('#docList a[href="' + row[0] + '"]');
