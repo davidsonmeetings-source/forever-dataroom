@@ -51,8 +51,10 @@ a{color:var(--navy-3)}
 .hero .eyebrow{font-size:var(--t-xs);letter-spacing:.08em;color:var(--gold);font-weight:600;margin-bottom:var(--s2)}
 .hero h1{font-size:clamp(var(--t-xl),5vw,var(--t-3xl));font-weight:800;line-height:1.15;letter-spacing:-.02em}
 .hero p{margin-top:var(--s2);font-size:var(--t-md);color:#c3cee5;max-width:560px}
-/* שורת-זהות אחת במקום שבבים מתחרים. ⚠ כל בן הוא פריט flex ולכן שורה נפרדת ב-innerText
-   של buildDigest — המפריד "·" הוא ::before ולכן אינו נכנס לחבילה. */
+/* שורת-זהות אחת במקום שבבים מתחרים. ⚠ כל בן הוא פריט flex ולכן שורה נפרדת
+   בטקסט שקורא-בלי-JS מחלץ (מנוע AI, קורא מסך) — המפריד "·" הוא ::before ולכן
+   אינו מזהם אותו. הנימוק היה במקור buildDigest, שהוסר 16.09.2026; המבנה נשאר
+   נכון מאותה סיבה בדיוק, ולכן אין לאחד את הפריטים לטקסט אחד. */
 .chip-row{margin-top:var(--s5);display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s2) var(--s3);
   padding-top:var(--s4);border-top:1px solid rgba(255,255,255,.14);font-size:var(--t-sm);color:#dbe3f0}
 .chip-row b{font-weight:600;color:#fff}
@@ -89,7 +91,8 @@ p+p{margin-top:var(--s2)}
 /* one surface */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) var(--s5);box-shadow:var(--e1)}
 .grid{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(240px,1fr));counter-reset:fc}
-/* ⚠ המספור הוא counter ולא טקסט — טקסט היה נכנס ל-buildDigest כשורת "01" מנותקת */
+/* ⚠ המספור הוא counter ולא טקסט — טקסט היה נקרא כשורת "01" מנותקת אצל כל מי
+   שמחלץ את תוכן הדף (מנוע AI, קורא מסך). */
 .fact{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s5);box-shadow:var(--e1)}
 .fact::before{counter-increment:fc;content:counter(fc,decimal-leading-zero);display:block;font-size:var(--t-2xs);font-weight:800;
   color:var(--gold-doc);letter-spacing:.1em;margin-bottom:var(--s2)}
@@ -112,8 +115,9 @@ p+p{margin-top:var(--s2)}
 .fold.plain>summary{padding:var(--s2) 0;color:var(--navy-3)}
 .fold.plain .body{padding:0 0 var(--s3)}
 
-/* השאלות כמסמך אחד ולא כ-13 קופסאות. ⚠ מחלקת .fold נשמרת — buildDigest ומאזין ה-faq_open
-   בוחרים "#faq details.fold"; המספור הוא counter ולכן אינו נכנס לחבילת ה-AI. */
+/* השאלות כמסמך אחד ולא כ-13 קופסאות. ⚠ מחלקת .fold נשמרת — מאזין ה-faq_open
+   בוחר "#faq details.fold"; המספור הוא counter ולכן אינו מזהם את הטקסט המחולץ.
+   📐 התשובות יושבות ב-HTML גם כשה-details סגור, ולכן קורא-בלי-JS מקבל את כולן. */
 .qa{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--e1);overflow:hidden;counter-reset:qn}
 .qgroup{padding:var(--s5) var(--s5) var(--s3)}
 .qgroup+.qgroup{border-top:1px solid var(--line)}
@@ -233,15 +237,10 @@ section.dark .est td{color:#93a4c4;font-style:italic}
 .doc.pending{opacity:.5;pointer-events:none}
 .doc.pending .d::after{content:" · יתווסף עם הפרסום"}
 
-/* ai */
-.ai{background:var(--navy);color:#dbe3f0;border-radius:var(--r);padding:var(--s5);box-shadow:var(--e1)}
-.ai h3{color:#fff;font-size:var(--t-md);font-weight:800}
-.ai p{color:#b9c6de;font-size:var(--t-sm);max-width:620px;margin-top:var(--s1)}
+/* ⛔ מחלקות .ai ו-.copied הוסרו 16.09.2026 יחד עם כפתור ה-AI. .btn נשארת —
+   היא גנרית ומשמשת גם את כרטיסי המסמכים. */
 .btn{display:inline-block;background:var(--gold);color:var(--navy);font-weight:600;font-size:var(--t-sm);padding:var(--s2) var(--s4);border-radius:10px;border:none;cursor:pointer;text-decoration:none;font-family:inherit}
 .btn:hover{background:#d8b23a}
-.copied{font-size:var(--t-xs);color:var(--ok);margin-inline-start:var(--s2);opacity:0;transition:opacity .3s}
-.ai .copied{color:#52c98a}
-.copied.show{opacity:1}
 
 /* chat (כבוי בדגל) */
 #chatFab,#chatPanel{display:none}
@@ -278,7 +277,7 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
   table.stack td.num{direction:rtl;text-align:right;font-weight:600}
   table.stack tr.sum-row{background:var(--tint);border-color:var(--gold-doc)}
 }
-@media print{nav,.ai,.btn{display:none}body{background:#fff}.fold .body{display:block!important}}
+@media print{nav,.btn{display:none}body{background:#fff}.fold .body{display:block!important}}
 </style>
 </head>
 <body>
@@ -317,7 +316,7 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
     <h2>על חדר המידע הזה</h2>
     <p>זהו חדר המידע הרשמי לרוכשי פרויקט <b>FOREVER</b> בפארק הים, ראשון לציון — פרויקט קבוצת רכישה בבעלות הרוכשים, בניהול קבוצת דוידסון. הדף נמסר לרוכש בקישור אישי.</p>
     <p><b>הנוסח המחייב הוא הסכם השיתוף על נספחיו.</b> כל תשובה במקטע "מה ההסכם אומר" מפנה למספרי הסעיפים בהסכם, כדי שניתן יהיה לאמת אותה מול הנוסח ולא להסתמך על הניסוח שכאן. מועד עדכון התוכן מופיע בכותרת מקטע הסטטוס התכנוני.</p>
-    <p><b>המספרים הכספיים של היחידה אינם חלק ממסמך זה.</b> אמדן היחידה, מס הרכישה, שכר טרחת עורכי הדין, הערכת הריבית ולוח ארבעת התשלומים הם נתונים אישיים לכל יחידה, ונטענים בדפדפן הרוכש לפי הקישור האישי שלו. קורא שקיבל את הכתובת בלבד רואה את מבנה העסקה, את מערך הבטוחות ואת הסטטוס התכנוני — אך לא את הסכומים, ואין להסיק מהיעדרם דבר. הרוכש יכול לצרף אותם באמצעות הכפתור "העתקת חבילת המידע ל-AI" שבתחתית הדף.</p>
+    <p><b>המספרים הכספיים אינם חלק מהטקסט הקבוע של העמוד.</b> אמדן היחידה, רכיבי הקרקע וההקמה, ההון העצמי, מס הרכישה, שכר טרחת עורכי הדין ולוח ארבעת התשלומים הם נתונים אישיים לכל יחידה. כאשר העמוד מוגש עם קישור אישי תקף, נתוני היחידה מופיעים בסופו תחת הכותרת "המספרים של היחידה"; הסכומים הנגזרים מהם מחושבים ומוצגים לרוכש בדפדפן. אם אותו מקטע אינו מופיע — הקישור נמסר בלי מזהה יחידה או שתוקפו פג, ואין להסיק דבר מהיעדר הסכומים.</p>
     <p>קבוצת דוידסון · 03-9798889 · office@davidsonh.co.il</p>
   </div></div>
 </noscript>
@@ -504,11 +503,11 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
       <h2>להורדה ולעיון</h2>
     </div>
     <div class="docs mt4" id="docList"></div>
-    <div class="ai mt5">
-      <h3>רוצים לבדוק אותנו עם AI? בבקשה.</h3>
-      <p>העתיקו את חבילת המידע — המספרים של היחידה, התשובות והסעיפים — והדביקו ב-ChatGPT או ב-Claude יחד עם הסכם השיתוף ונספחיו. כל תשובה כאן מפנה לסעיף, כך שה-AI יכול לאמת אותה מול הנוסח במקום לנחש.</p>
-      <div style="margin-top:var(--s3)"><button class="btn" id="copyAI">העתקת חבילת המידע ל-AI</button><span class="copied" id="copiedMsg">הועתק</span></div>
-    </div>
+    <!-- ⛔ כאן ישב הבלוק "רוצים לבדוק אותנו עם AI?" עם הכפתור copyAI, שהעתיק
+         ללוח חבילת מידע שנגזרה מה-DOM (buildDigest). הוסר בהוראת שלומי 16.09.2026.
+         במקומו: המספרים מוזרקים בצד שרת לתוך noscript ב-functions/_middleware.js,
+         כך שמנוע AI שמקבל את הקישור רואה אותם בלי שהרוכש צריך להעתיק דבר.
+         ⚠ אין להחזיר את הכפתור בלי להחזיר גם את buildDigest — שניהם הוסרו יחד. -->
   </div>
 </section>
 
@@ -852,7 +851,8 @@ const TRACK_NAME = TRACK === 'A' ? 'ריבית שוטפת' : 'גרייס מלא'
 
 (function hero(){
   const c = document.getElementById("unitChip");
-  // ⚠ כל פריט הוא שורה נפרדת ב-innerText של buildDigest — לכן כל פריט נושא את התווית שלו בתוכו.
+  // ⚠ כל פריט נקרא כשורה נפרדת ע"י מי שמחלץ את תוכן הדף — ולכן כל פריט נושא את
+  // התווית שלו בתוכו ואינו נשען על כותרת נפרדת. (הנימוק היה buildDigest, שהוסר.)
   const cells = [`<b>${UNIT.building}</b>`, `קומה <b>${UNIT.floor}</b>`, `דירה <b>${UNIT.unitNo}</b>`,
                  `<b>${UNIT.rooms}</b> חדרים`, `<b>${UNIT.sqm} מ"ר</b>`];
   c.innerHTML = cells.map(v => `<span class="i">${v}</span>`).join("")
@@ -935,45 +935,12 @@ document.getElementById("trackPara").innerHTML = TRACK === 'A'
   }).join("");
 })();
 
-/* ---------- AI package: נגזרת מהדף עצמו, כדי שלא יהיו שני נוסחים ---------- */
-function buildDigest(){
-  const closed = [...document.querySelectorAll("details:not([open])")]; closed.forEach(d => d.open = true);
-  try { return buildDigestInner(); } finally { closed.forEach(d => d.open = false); }
-}
-function buildDigestInner(){
-  const txt = el => (el ? el.innerText : "").replace(/\s+\n/g, "\n").replace(/[ \t]+/g, " ").trim();
-  const out = [];
-  out.push("# פרויקט FOREVER — חבילת מידע לרוכש (להזנה ל-AI)");
-  out.push("מקור: חדר המידע הרשמי לרוכשים, קבוצת דוידסון. עדכון: " + UNIT.updated + ". הנוסח המחייב הוא הסכם השיתוף על נספחיו.");
-  out.push("\n## היחידה ולוח התשלומים (מסלול " + TRACK_NAME + ")");
-  out.push(txt(document.getElementById("unitChip")));
-  out.push(txt(document.querySelector("#numbers .stats")));
-  out.push(txt(document.querySelector("#numbers .grand")));
-  out.push("\n### ההון העצמי — כמה משלמים, ומתי");
-  out.push(txt(document.getElementById("eqNote")));
-  out.push(txt(document.getElementById("payList")));
-  out.push(txt(document.getElementById("restNote")));
-  out.push("\n## בקצרה");
-  out.push(txt(document.querySelector("#start")));
-  out.push("\n## סטטוס תכנוני (" + UNIT.updated + ") — השורות העתידיות הן צפי, לא התחייבות");
-  out.push([...document.querySelectorAll("#status table tr")].map(tr =>
-    [...tr.cells].map(td => txt(td)).join(" — ")).join("\n"));
-  out.push("\n## מה ההסכם אומר");
-  document.querySelectorAll("#faq details.fold").forEach(d => {
-    out.push("### " + txt(d.querySelector("summary")));
-    out.push(txt(d.querySelector(".body")));
-  });
-  out.push("\n## הסתייגות");
-  out.push(txt(document.querySelector("footer .legal")));
-  return out.join("\n");
-}
-document.getElementById("copyAI").addEventListener("click", async () => {
-  const digest = buildDigest();
-  try { await navigator.clipboard.writeText(digest); }
-  catch(e){ const ta = document.createElement("textarea"); ta.value = digest; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
-  const m = document.getElementById("copiedMsg"); m.classList.add("show"); setTimeout(() => m.classList.remove("show"), 3000);
-  sendEvent("copy_ai");
-});
+/* ⛔ כאן ישבו buildDigest/buildDigestInner והמאזין של הכפתור copyAI — נגזרת
+   של חבילת המידע מה-DOM, להעתקה ללוח. הוסרו יחד עם הכפתור בהוראת שלומי
+   16.09.2026. התחליף: functions/_middleware.js מזריק את מספרי היחידה בצד
+   שרת לתוך noscript, ולכן מנוע AI שקיבל את הקישור רואה אותם ישירות.
+   🚨 הסרת ה-HTML בלי המאזין הייתה מפילה את **כל** הסקריפט:
+      getElementById("copyAI") מחזיר null, ו-.addEventListener עליו זורק. */
 
 /* ---------- analytics beacons (Make) ---------- */
 const DATAROOM_HOOK = "https://hook.eu2.make.com/fkf47qjdz3y5f3hd2cr7pozsuwaleuom";
