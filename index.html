@@ -241,15 +241,6 @@ section.dark .status td:nth-child(2){color:var(--gold)}
 section.dark .est td{color:#93a4c4;font-style:italic}
 .st-text p{font-size:var(--t-sm);line-height:1.75;color:#dbe3f0;margin:0 0 var(--s3)}
 .st-text b{color:#fff;font-weight:800}
-/* רשימת היועצים נפתחת רק בלחיצה (הוראת שלומי). details ולא JS — תגית סקריפט נוספת שוברת את הבנייה הציבורית */
-details.team>summary{display:inline-flex;align-items:center;gap:var(--s2);cursor:pointer;list-style:none;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:var(--s2) var(--s4);font-weight:600;font-size:var(--t-xs)}
-details.team>summary::-webkit-details-marker{display:none}
-details.team>summary::after{content:"";width:6px;height:6px;border-inline-end:2px solid currentColor;border-block-end:2px solid currentColor;transform:rotate(45deg);margin-top:-3px;transition:transform .2s}
-details.team[open]>summary::after{transform:rotate(-135deg);margin-top:3px}
-details.team>summary:hover{background:rgba(201,162,39,.12)}
-details.team table{margin-top:var(--s3);font-size:var(--t-xs)}
-details.team td{padding:var(--s1) var(--s2)}
-details.team td:first-child{font-weight:600;color:#fff;width:45%}
 
 /* docs */
 .docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:var(--s2)}
@@ -426,25 +417,6 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
       <p><b>איפה אנחנו היום:</b> ב-09.09.2026 אישרה הוועדה המקומית את תכנית הבינוי, הפיתוח והתשתיות של השכונה, בכפוף להשלמת התיאום עם הגורמים העירוניים. זה השער שפותח את הדרך להגשת בקשות להיתר במגרשי השכונה. במקביל אנחנו מקדמים את התכנון המפורט של מגרש 205, ובסוף ספטמבר התקיימה ישיבת הכנה עם אגפי העירייה.</p>
       <p>ב-13.10.2026 יתקיים שולחן עגול: ישיבה משותפת שבה צוות התכנון שלנו מציג את הפרויקט בפני כל אגפי העירייה הרלוונטיים יחד – תנועה, פיתוח, אדריכלות, תברואה וסביבה. במקום לעבור בין מחלקות אחת אחרי השנייה, כל הגורמים מעירים ומתאמים בבת אחת. כך נחסכים סבבים ארוכים, לאחר אישור התכנון בשולחן עגול ניתן להגיש חוברת עיצוב אדריכלית.</p>
     </div>
-    <details class="team mt4"><summary>צוות התכנון — 15 משרדים</summary>
-      <table>
-        <tr><td>אדריכלות</td><td>רפאל דה לה פונטיין</td></tr>
-        <tr><td>קונסטרוקציה</td><td>אלעד מהנדסים</td></tr>
-        <tr><td>אדריכלות נוף</td><td>דדי גולן</td></tr>
-        <tr><td>הידרולוגיה</td><td>איתי קיסר</td></tr>
-        <tr><td>תנועה</td><td>אלבר אנדריא</td></tr>
-        <tr><td>מדידה</td><td>קו מדידה</td></tr>
-        <tr><td>חשמל</td><td>י. רפפורט</td></tr>
-        <tr><td>אינסטלציה</td><td>נש מהנדסים</td></tr>
-        <tr><td>מיזוג אוויר</td><td>רודניק וישקין תכנון</td></tr>
-        <tr><td>בטיחות אש</td><td>ש. נתנאל מהנדסים יועצים</td></tr>
-        <tr><td>מעליות</td><td>VIS הנדסה</td></tr>
-        <tr><td>מיגון</td><td>נביקא</td></tr>
-        <tr><td>אקוסטיקה</td><td>עדי אקוסטיקה</td></tr>
-        <tr><td>תברואה</td><td>אינסייט</td></tr>
-        <tr><td>בנייה ירוקה, תרמי ואיכות סביבה</td><td>ESD</td></tr>
-      </table>
-    </details>
   </div>
 </section>
 
