@@ -88,6 +88,19 @@ h4{font-size:var(--t-xs);font-weight:600;color:var(--ink-2);letter-spacing:.06em
 p+p{margin-top:var(--s2)}
 .mt4{margin-top:var(--s4)} .mt5{margin-top:var(--s5)}
 
+/* נגן וידאו מוטמע. 🚨 **חובה `referrerpolicy="strict-origin-when-cross-origin"`
+   על כל iframe של יוטיוב כאן.** ההאב מגיש את הדף עם `Referrer-Policy: no-referrer`,
+   יוטיוב לא מקבל מקור־מפנה, והנגן מציג "Video player configuration error · Error 153"
+   במקום הסרטון. נמדד 18.09.2026 בשני הסרטונים, ואומת שהתכונה על ה-iframe מתקנת.
+   ⚠ youtube-nocookie בכוונה — הדף נשלח לרוכש אישית ואין סיבה
+   שיוטיוב יזהה אותו בכניסה. ⛔ בלי פסאדה עם JS: הבנייה הציבורית מאתרת בלוקי
+   סקריפט ברגקס גולמי, ותגית סקריפט נוספת שוברת אותה. */
+.embed{max-width:680px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);box-shadow:var(--e1);background:#000}
+.embed iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+.cap{max-width:680px;margin-top:var(--s3);font-size:var(--t-xs);color:var(--ink-2)}
+section.dark .embed{border-color:rgba(255,255,255,.16)}
+section.dark .cap{color:#93a4c4}
+
 /* one surface */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) var(--s5);box-shadow:var(--e1)}
 .grid{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(240px,1fr));counter-reset:fc}
@@ -226,6 +239,17 @@ section.dark .status td:nth-child(2){color:var(--gold)}
 .status .now td{background:rgba(201,162,39,.10)}
 .status .now td:nth-child(3){color:#fff}
 section.dark .est td{color:#93a4c4;font-style:italic}
+.st-text p{font-size:var(--t-sm);line-height:1.75;color:#dbe3f0;margin:0 0 var(--s3)}
+.st-text b{color:#fff;font-weight:800}
+/* רשימת היועצים נפתחת רק בלחיצה (הוראת שלומי). details ולא JS — תגית סקריפט נוספת שוברת את הבנייה הציבורית */
+details.team>summary{display:inline-flex;align-items:center;gap:var(--s2);cursor:pointer;list-style:none;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:var(--s2) var(--s4);font-weight:600;font-size:var(--t-xs)}
+details.team>summary::-webkit-details-marker{display:none}
+details.team>summary::after{content:"";width:6px;height:6px;border-inline-end:2px solid currentColor;border-block-end:2px solid currentColor;transform:rotate(45deg);margin-top:-3px;transition:transform .2s}
+details.team[open]>summary::after{transform:rotate(-135deg);margin-top:3px}
+details.team>summary:hover{background:rgba(201,162,39,.12)}
+details.team table{margin-top:var(--s3);font-size:var(--t-xs)}
+details.team td{padding:var(--s1) var(--s2)}
+details.team td:first-child{font-weight:600;color:#fff;width:45%}
 
 /* docs */
 .docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:var(--s2)}
@@ -295,7 +319,9 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
   <a href="#numbers">המספרים</a>
   <a href="#start">בקצרה</a>
   <a href="#status">הפרויקט</a>
+  <a href="#model">המודל</a>
   <a href="#faq">ההסכם</a>
+  <a href="#voices">לקוחות</a>
   <a href="#docs">מסמכים</a>
   <div id="prog"></div>
 </div></nav>
@@ -372,21 +398,71 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
 <section id="status" class="dark">
   <div class="wrap">
     <div class="read">
-      <div class="eyebrow-s">סטטוס תכנוני · עדכון אוגוסט 2026</div>
+      <div class="eyebrow-s">סטטוס תכנוני · עדכון ספטמבר 2026</div>
       <h2>איפה הפרויקט עומד</h2>
     </div>
+    <!-- ⚠ עדכון 27.09.2026 מול פרוטוקול ועדת המשנה 09.09.2026 (סעיף 1): שלב א' של תכנית
+         הבינוי אושר 26.05.2026 (לא ביוני) · האישור מ-09.09 הוא לשכונה כולה ו"בכפוף להשלמת
+         התאום" — לא להשמיט את התנאי · הצוות = 15 משרדים כולל אדריכלות וקונסטרוקציה.
+         ⛔ לא לכתוב כאן את מפלס 16.50 (לא סגור, פער מול 16.20) ולא 12 מ' בין בניינים
+         (רק בתכנית המתקנת שבהפקדה). ⚠ טווח תאריכים בספרות (12/2026–01/2027) מתהפך
+         בתא RTL — שמות חודשים. -->
     <div class="tbl mt4"><table class="status">
-      <tr class="done"><td class="st"></td><td>מרץ 2026</td><td>צוות יועצי התכנון גובש — אדריכל, קונסטרוקטור ו-14 יועצים</td></tr>
-      <tr class="done"><td class="st"></td><td>מאי 2026</td><td>תכנון ראשוני הוצג לעירייה</td></tr>
-      <tr class="done"><td class="st"></td><td>יוני 2026</td><td>ועדת התכנון — אישור עקרוני לתכנית הבינוי של השכונה</td></tr>
+      <tr class="done"><td class="st"></td><td>מרץ 2026</td><td>צוות התכנון גובש — 15 משרדים: אדריכלות, קונסטרוקציה ו-13 תחומי ייעוץ</td></tr>
+      <tr class="done"><td class="st"></td><td>מאי 2026</td><td>תכנון ראשוני הוצג לעירייה, והוועדה אישרה את שלב א' של תכנית הבינוי לשכונה</td></tr>
       <tr class="done"><td class="st"></td><td>יולי 2026</td><td>ישיבת קדם-תכנון מול העירייה — אור ירוק לתכנון</td></tr>
-      <tr class="now"><td class="st"></td><td>אוג'–דצמ' 2026</td><td><b>השלב הנוכחי:</b> תיאום תכנון ותכנית עיצוב אדריכלית מול העירייה</td></tr>
-      <tr class="est"><td class="st"></td><td>12/2026–01/2027 · צפי</td><td>הגשת בקשה להיתר מלא, ובמקביל להיתר חפירה ודיפון</td></tr>
+      <tr class="done"><td class="st"></td><td>09.09.2026</td><td>הוועדה המקומית אישרה את תכנית הבינוי, הפיתוח והתשתיות של השכונה, בכפוף להשלמת התיאום עם הגורמים העירוניים. זה התנאי להגשת בקשה להיתר בכל מגרש בשכונה, כולל מגרש 205</td></tr>
+      <tr class="done"><td class="st"></td><td>23.09.2026</td><td>ישיבת הכנה עם אגפי העירייה — הצגת החבילה האדריכלית של מגרש 205</td></tr>
+      <tr class="now"><td class="st"></td><td>13.10.2026</td><td><b>השלב הנוכחי:</b> שולחן עגול עם כל אגפי העירייה</td></tr>
+      <tr class="est"><td class="st"></td><td>אוק'–דצמ' 2026 · צפי</td><td>סגירת ההערות מהשולחן העגול והגשת חוברת העיצוב של המגרש</td></tr>
+      <tr class="est"><td class="st"></td><td>דצמ' 2026–ינו' 2027 · צפי</td><td>הגשת בקשה להיתר מלא, ובמקביל להיתר חפירה ודיפון</td></tr>
       <tr class="est"><td class="st"></td><td>יוני–יולי 2027 · צפי</td><td>היתר חפירה ודיפון ועלייה על הקרקע</td></tr>
       <tr class="est"><td class="st"></td><td>מרץ 2028 · צפי</td><td>היתר מלא והמשך רציף של הבנייה</td></tr>
       <tr class="est"><td class="st"></td><td>מחצית ב' 2030</td><td>מסירה — הערכה תכנונית, כפופה להליכי הרישוי</td></tr>
     </table></div>
     <p class="seg-note" style="color:#93a4c4;margin-top:var(--s3)">השורות המסומנות "צפי" הן הערכה תכנונית הכפופה להליכי הרישוי — לא התחייבות למועד.</p>
+    <!-- נוסח שלומי 27.09.2026, מילה במילה — לא לנסח מחדש. -->
+    <div class="read st-text mt5">
+      <p><b>איפה אנחנו היום:</b> ב-09.09.2026 אישרה הוועדה המקומית את תכנית הבינוי, הפיתוח והתשתיות של השכונה, בכפוף להשלמת התיאום עם הגורמים העירוניים. זה השער שפותח את הדרך להגשת בקשות להיתר במגרשי השכונה. במקביל אנחנו מקדמים את התכנון המפורט של מגרש 205, ובסוף ספטמבר התקיימה ישיבת הכנה עם אגפי העירייה.</p>
+      <p>ב-13.10.2026 יתקיים שולחן עגול: ישיבה משותפת שבה צוות התכנון שלנו מציג את הפרויקט בפני כל אגפי העירייה הרלוונטיים יחד – תנועה, פיתוח, אדריכלות, תברואה וסביבה. במקום לעבור בין מחלקות אחת אחרי השנייה, כל הגורמים מעירים ומתאמים בבת אחת. כך נחסכים סבבים ארוכים, לאחר אישור התכנון בשולחן עגול ניתן להגיש חוברת עיצוב אדריכלית.</p>
+    </div>
+    <details class="team mt4"><summary>צוות התכנון — 15 משרדים</summary>
+      <table>
+        <tr><td>אדריכלות</td><td>רפאל דה לה פונטיין</td></tr>
+        <tr><td>קונסטרוקציה</td><td>אלעד מהנדסים</td></tr>
+        <tr><td>אדריכלות נוף</td><td>דדי גולן</td></tr>
+        <tr><td>הידרולוגיה</td><td>איתי קיסר</td></tr>
+        <tr><td>תנועה</td><td>אלבר אנדריא</td></tr>
+        <tr><td>מדידה</td><td>קו מדידה</td></tr>
+        <tr><td>חשמל</td><td>י. רפפורט</td></tr>
+        <tr><td>אינסטלציה</td><td>נש מהנדסים</td></tr>
+        <tr><td>מיזוג אוויר</td><td>רודניק וישקין תכנון</td></tr>
+        <tr><td>בטיחות אש</td><td>ש. נתנאל מהנדסים יועצים</td></tr>
+        <tr><td>מעליות</td><td>VIS הנדסה</td></tr>
+        <tr><td>מיגון</td><td>נביקא</td></tr>
+        <tr><td>אקוסטיקה</td><td>עדי אקוסטיקה</td></tr>
+        <tr><td>תברואה</td><td>אינסייט</td></tr>
+        <tr><td>בנייה ירוקה, תרמי ואיכות סביבה</td><td>ESD</td></tr>
+      </table>
+    </details>
+  </div>
+</section>
+
+<!-- ===== 3ב. איך המודל עובד (סרטון) =====
+     ⚠ סדר המקטעים חי בשלושה מקומות במקביל: ה-HTML כאן, סרגל הניווט למעלה,
+       וגוני הרקע המתחלפים (numbers לבן · start alt · status dark · model alt ·
+       faq לבן · voices dark · docs alt). הזזת מקטע מחייבת את שלושתם. -->
+<section id="model" class="alt">
+  <div class="wrap">
+    <div class="read">
+      <div class="eyebrow-s">לפני השאלות</div>
+      <h2>איך קבוצת רכישה עובדת</h2>
+      <p class="lede">הסבר קצר על המודל: מה קונים, מי הבעלים, ואיך נבנית העלות. שווה לצפות לפני שקוראים את התשובות שלמטה.</p>
+    </div>
+    <div class="embed mt5">
+      <iframe referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/PJ1h-fbSrBY?rel=0" title="כל מה שרציתם לדעת על קבוצות רכישה" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <p class="cap">כל מה שרציתם לדעת על קבוצות רכישה · קבוצת דוידסון</p>
   </div>
 </section>
 
@@ -492,6 +568,21 @@ footer .legal{margin-top:var(--s3);color:#8592ad;font-size:var(--t-2xs)}
       <span class="ref">בהסכם: 2.1 · 2.4 · 2.6 · 2.8</span></div></details>
     </div>
     </div>
+  </div>
+</section>
+
+<!-- ===== 4ב. לקוחות מספרים (סרטון ממליצים) ===== -->
+<section id="voices" class="dark">
+  <div class="wrap">
+    <div class="read">
+      <div class="eyebrow-s">לקוחות מספרים</div>
+      <h2>סיפורי הצלחה מדברים בעד עצמם</h2>
+      <p class="lede">רוכשים מפרויקטים קודמים של הקבוצה, במילים שלהם.</p>
+    </div>
+    <div class="embed mt5">
+      <iframe referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/0R88iZxOvGc?rel=0" title="סיפורי הצלחה מדברים בעד עצמם" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <p class="cap">סיפורי הצלחה מדברים בעד עצמם · קבוצת דוידסון</p>
   </div>
 </section>
 
@@ -719,6 +810,7 @@ function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
       + 'אם הקישור הגיע אליכם ואינו נפתח, פנו אלינו ונשלח קישור מעודכן.<br>'
       + 'קבוצת דוידסון · 03-9798889 · office@davidsonh.co.il</div></div>';
   }
+
   if (!t) { notfound(); return; }
   fetch(DR_HOOK + "?action=unit&t=" + encodeURIComponent(t))
     .then(function(r){ return r.json(); })
@@ -729,6 +821,15 @@ function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
          הוא עוגן שהקוד תופס. שאר המסמכים נשארים כפי שהוגדרו בדף המקור. */
       /* המסמכים הקבועים: קישור צפייה בדרייב. מזהה ריק ⇒ הכרטיס נשאר כפי
          שהוגדר בדף המקור, כלומר pending — ולא קישור שבור. */
+      __drDocs(u);
+      window.__DR_UNIT__ = u;
+      main();
+      reveal();
+    })
+    .catch(function(){ notfound(); });
+
+  /* מקטע המסמכים — מקור אמת אחד לשני המסלולים (טוקן חי + עותק ההדגמה). */
+  function __drDocs(u){
       var DRIVE = {"agreement":""};
       function fromDrive(key){
         var cur = __DR_DEFAULTS__.docs[key] || {};
@@ -751,11 +852,7 @@ function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
         present:   { url: "#dr-hide", label: "", desc: "" },
         infosheet: { url: "#dr-hide", label: "", desc: "" }
       });
-      window.__DR_UNIT__ = u;
-      main();
-      reveal();
-    })
-    .catch(function(){ notfound(); });
+  }
 
   function main(){
     /* main() רץ רק אחרי שה-fetch חזר, ובשלב הזה document.readyState כבר
