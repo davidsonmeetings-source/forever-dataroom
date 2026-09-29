@@ -765,6 +765,30 @@ function naWords(n){
 function naMoney(n){ return Math.round(n).toLocaleString("en-US"); }
   var t = new URLSearchParams(location.search).get("t");
 
+  /* ---- סימון מכשיר: לקוח או סוכן (30.09.2026) ----
+     כל אירוע נושא dev (מזהה אקראי קבוע למכשיר) ו-who. מכשיר שנכנס פעם אחת דרך
+     קישור הסוכן (&a=1 — העותק שנשלח לסוכן) או דרך תצוגה מקדימה מהמחירון (טוקן
+     pv-) מסומן כמכשיר סוכן לתמיד, גם כשהוא פותח אחר כך קישור של לקוח.
+     תרחיש 9688842 אינו מתריע לסוכן על צפייה של who=agent.
+     ⚠ localStorage עלול לזרוק (גלישה פרטית, נתוני אתר חסומים) — הכל עטוף, ובכשל
+        המכשיר נחשב לקוח: התראה מיותרת עדיפה על התראה שנבלעה. */
+  var __drDev = "", __drWho = "client";
+  (function(){
+    var q = new URLSearchParams(location.search);
+    var agentHit = q.get("a") === "1" || /^pv-/.test(t || "");
+    try {
+      __drDev = localStorage.getItem("drDev") || "";
+      if (!__drDev) { __drDev = Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem("drDev", __drDev); }
+      if (agentHit) localStorage.setItem("drAgent", "1");
+      if (localStorage.getItem("drAgent") === "1") __drWho = "agent";
+    } catch (e) { if (agentHit) __drWho = "agent"; }
+    /* a=1 יורד מהשורה: כתובת שמועתקת מהדפדפן ומועברת ללקוח לא תסמן את המכשיר שלו */
+    if (q.has("a")) {
+      q.delete("a");
+      try { history.replaceState(null, "", location.pathname + "?" + q.toString() + location.hash); } catch (e) {}
+    }
+  })();
+
   /* הדף מוסתר עד שהיחידה נטענת. בלי זה נראה לרגע שלד עם כותרות בלי מספרים,
      ובטוקן שגוי הוא היה מהבהב לפני הודעת השגיאה (נצפה בבדיקה 10.09.2026). */
   var veil = document.createElement("style");
@@ -1020,7 +1044,7 @@ const CHAT_ENABLED = false;   // הצ׳אט כבוי עד שייבדק; הקוד
 function roomToken(){ return new URLSearchParams(location.search).get("t") || "_general"; }
 function sendEvent(type, meta){
   if (!DATAROOM_HOOK) return;
-  const b = new URLSearchParams(); b.append("type", "event"); b.append("t", roomToken()); b.append("evtype", type); b.append("meta", meta ? String(meta).slice(0, 400) : "");
+  const b = new URLSearchParams(); b.append("type", "event"); b.append("t", roomToken()); b.append("evtype", type); b.append("dev", __drDev); b.append("who", __drWho); b.append("meta", meta ? String(meta).slice(0, 400) : "");
   try { if (navigator.sendBeacon) navigator.sendBeacon(DATAROOM_HOOK, new Blob([b.toString()], { type: "application/x-www-form-urlencoded" }));
         else fetch(DATAROOM_HOOK, { method: "POST", body: b, keepalive: true }); } catch(e){}
 }
